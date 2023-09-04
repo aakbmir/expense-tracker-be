@@ -1,9 +1,11 @@
 package com.aakbmir.expensetracker.utils;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class CommonUtils {
     public static List<String> getYears() {
@@ -52,5 +54,13 @@ public class CommonUtils {
     public static int getCurrentYear() {
         LocalDate currentDate = LocalDate.now();
         return currentDate.getYear();
+    }
+
+    public static String toUtc(Date date) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String utcDateString = sdf.format(date);
+        return utcDateString;
     }
 }

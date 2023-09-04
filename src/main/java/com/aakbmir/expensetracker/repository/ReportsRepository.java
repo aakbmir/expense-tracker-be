@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface IncomeRepository extends JpaRepository<Income, Long> {
+public interface ReportsRepository extends JpaRepository<Income, Long> {
     Income findByName(String name);
 
     List<Income> findAllByOrderByNameAsc();

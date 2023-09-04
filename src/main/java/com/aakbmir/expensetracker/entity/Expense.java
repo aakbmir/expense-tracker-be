@@ -24,9 +24,9 @@ public class Expense {
 
     private String category;
 
-    private String item;
-
     private double price;
 
     private Date date;
+
+    private String note;
 }

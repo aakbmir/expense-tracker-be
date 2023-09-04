@@ -35,10 +35,10 @@ public class CategoryService {
     }
 
     public List<Category> getAllCategories() {
-        return categoryRepository.findAllByOrderByUmbrellaAscCategoryAsc();
+        return categoryRepository.findAllByOrderByParentAscCategoryAsc();
     }
 
-    public List<String> fetchUmbrellaCategory() {
-        return categoryRepository.fetchUmbrellaCategory();
+    public List<String> fetchParentCategory() {
+        return categoryRepository.fetchParentCategory();
     }
 }

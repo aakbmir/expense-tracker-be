@@ -50,6 +50,12 @@ public class BudgetController {
         return new ResponseEntity(catList, HttpStatus.OK);
     }
 
+    @GetMapping("/get-current-budget")
+    public ResponseEntity getCurrentBudget(@RequestParam(name = "month") String month,@RequestParam(name = "year") String year) {
+        List<Budget> budgetsForMonth = budgetService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
+        return new ResponseEntity(budgetsForMonth, HttpStatus.OK);
+    }
+
     @DeleteMapping("/del-budget/{id}")
     private void deleteBudget(@PathVariable("id") Long id) {
         budgetService.deleteBudget(id);

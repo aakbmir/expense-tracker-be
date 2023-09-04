@@ -4,7 +4,6 @@ import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.service.BudgetService;
 import com.aakbmir.expensetracker.service.CategoryService;
-import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @RestController
@@ -28,13 +28,11 @@ public class CategoryController {
 
     @PostMapping("/save-category")
     public ResponseEntity saveCategory(@RequestBody Category category) {
-        if(category != null && category.getCategory() != null && category.getUmbrella() != null){
+        if(category != null && category.getCategory() != null && category.getParent() != null){
+            category.setCategory(category.getCategory().toUpperCase());
+            category.setParent(category.getParent().toUpperCase());
             Category cat = categoryService.saveCategory(category);
-
-            Budget budget = new Budget();
-            budget.setCategory(cat.getCategory());
-            budget.setDate(new Date());
-            budgetService.saveBudget(budget);
+            saveBudget(cat);
             return new ResponseEntity(cat, HttpStatus.OK);
         } else {
             JSONObject json = new JSONObject().put("message","invalid Request");
@@ -42,17 +40,34 @@ public class CategoryController {
         }
     }
 
-    @PostMapping("/save-mul-category")
+    private void saveBudget(Category cat) {
+        Budget budget = new Budget();
+        budget.setCategory(cat.getCategory());
+        budget.setParent(cat.getParent());
+        budget.setDate(new Date());
+        budgetService.saveBudget(budget);
+    }
+
+    private void updateBudget(Budget budgetObj, Category category) {
+        Budget budget = new Budget();
+        budget.setId(budgetObj.getId());
+        budget.setCategory(category.getCategory());
+        budget.setParent(category.getParent());
+        budget.setDate(new Date());
+        budgetService.saveBudget(budget);
+    }
+
+        @PostMapping("/save-mul-category")
     public ResponseEntity saveMulCategory(@RequestBody List<Category> categoryList) {
         for (Category cat : categoryList) {
-            categoryService.saveCategory(cat);
+            saveCategory(cat);
         }
         return new ResponseEntity("Success", HttpStatus.OK);
     }
 
-    @GetMapping("/fetch-umbrella-category")
-    public ResponseEntity fetchUmbrellaCategory() {
-        List<String> catList = categoryService.fetchUmbrellaCategory();
+    @GetMapping("/fetch-parent-category")
+    public ResponseEntity fetchParentCategory() {
+        List<String> catList = categoryService.fetchParentCategory();
         return new ResponseEntity(catList, HttpStatus.OK);
     }
 
@@ -70,7 +85,12 @@ public class CategoryController {
 
     @DeleteMapping("/del-category/{id}")
     private void deleteCategory(@PathVariable("id") Long id) {
+        Optional<Category> categoryObj = categoryService.findById(id);
+        String categoryName = categoryObj.get().getCategory();
         categoryService.deleteCategory(id);
+        System.out.println(categoryName);
+        Budget budgetObj = budgetService.findByBudget(categoryName);
+        budgetService.deleteBudget(budgetObj.getId());
     }
 
     @PostMapping("/update-category")
@@ -78,10 +98,13 @@ public class CategoryController {
         Optional<Category> categoryObj = categoryService.findById(category.getId());
 
         if (categoryObj.isPresent()) {
+            Budget budgetObj = budgetService.findByBudget(categoryObj.get().getCategory());
             Category cat = categoryObj.get();
             cat.setCategory(category.getCategory());
-            cat.setUmbrella(category.getUmbrella());
+            cat.setParent(category.getParent());
             Category updateCat = categoryService.updateCategory(cat);
+
+            updateBudget(budgetObj, category);
             return new ResponseEntity(updateCat, HttpStatus.OK);
         }
         return new ResponseEntity(category, HttpStatus.OK);

@@ -19,10 +19,11 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String category;
 
-    private String price;
+    private String parent;
+
+    private double price;
 
     private Date date;
 

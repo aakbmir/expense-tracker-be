@@ -19,5 +19,5 @@ public class Category {
     @Column(unique = true)
     private String category;
 
-    private String umbrella;
+    private String parent;
 }
