@@ -12,8 +12,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findAllByOrderByParentAscCategoryAsc();
 
+    List<Category> findAllByOrderByCategoryAsc();
+
+    List<Category> findAllByOrderByParentAsc();
+
     /*List<Category> findByMonthYear(String concatField);*/
 
-    @Query("SELECT DISTINCT p.parent FROM Category p")
+    @Query("SELECT DISTINCT p.parent FROM Category p order by parent asc")
     List<String> fetchParentCategory();
 }

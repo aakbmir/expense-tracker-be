@@ -4,6 +4,7 @@ import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.entity.Income;
 import com.aakbmir.expensetracker.service.IncomeService;
 import com.aakbmir.expensetracker.service.ReportsService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,23 @@ public class ReportsController {
     @Autowired
     ReportsService reportsService;
 
-    @GetMapping("/total-overview")
+    @GetMapping("/overview-category")
     public ResponseEntity getMonthlyOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        JSONObject expensesForMonth = reportsService.calculateMonthlyView(Integer.valueOf(year), Integer.valueOf(month));
+        JSONObject expensesForMonth = reportsService.calculateMonthlyOverview(Integer.valueOf(year), Integer.valueOf(month));
+        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    }
+
+    @GetMapping("/monthly-category")
+    public ResponseEntity getMonthlyCategory(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        JSONArray expensesForMonth = reportsService.calculateMonthlyCategoryView(Integer.valueOf(year), Integer.valueOf(month));
+        System.out.println(expensesForMonth);
+        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    }
+
+    @GetMapping("/monthly-parent")
+    public ResponseEntity getMonthlyParent(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        JSONArray expensesForMonth = reportsService.calculateMonthlyParentView(Integer.valueOf(year), Integer.valueOf(month));
+        System.out.println(expensesForMonth);
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 }

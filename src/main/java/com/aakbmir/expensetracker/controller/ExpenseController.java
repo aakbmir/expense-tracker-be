@@ -23,7 +23,6 @@ public class ExpenseController {
     public ResponseEntity saveExpense(@RequestBody Expense expense) {
         if (expense != null && expense.getDate() != null
                 && expense.getNote() != null && expense.getPrice() != 0) {
-
             Expense cat = expenseService.saveExpense(expense);
             return new ResponseEntity(cat, HttpStatus.OK);
         } else {
@@ -73,7 +72,9 @@ public class ExpenseController {
         if (expenseObj.isPresent()) {
             Expense cat = expenseObj.get();
             cat.setId(expense.getId());
+            cat.setCategory(expense.getCategory());
             cat.setPrice(expense.getPrice());
+            cat.setParent(expense.getParent());
             cat.setDate(expense.getDate());
             cat.setNote(expense.getNote());
             Expense updateCat = expenseService.updateExpense(cat);
