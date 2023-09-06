@@ -29,7 +29,6 @@ RUN gradle build --no-daemon
 
 FROM openjdk:17-jdk-slim-buster
 WORKDIR /app
-cd /app
 ls
 COPY --from=builder /app/build/libs/expense-tracker-be-0.0.1-SNAPSHOT /app/tracker-expense-be.jar
 EXPOSE 8080
