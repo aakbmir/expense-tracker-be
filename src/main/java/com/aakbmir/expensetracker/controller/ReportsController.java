@@ -2,6 +2,7 @@ package com.aakbmir.expensetracker.controller;
 
 import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.entity.Income;
+import com.aakbmir.expensetracker.entity.MonthlyTotal;
 import com.aakbmir.expensetracker.service.IncomeService;
 import com.aakbmir.expensetracker.service.ReportsService;
 import org.json.JSONArray;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,8 +49,8 @@ public class ReportsController {
     }
 
     @GetMapping("/trends-overview")
-    public ResponseEntity getTrendsOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        JSONObject expensesForMonth = reportsService.calculateTrendsOverview(Integer.valueOf(year), Integer.valueOf(month));
+    public ResponseEntity getTrendsOverview() {
+        ArrayList<MonthlyTotal> expensesForMonth = reportsService.calculateTrendsOverview();
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 }

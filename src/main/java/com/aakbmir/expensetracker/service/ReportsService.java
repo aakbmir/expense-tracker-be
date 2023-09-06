@@ -3,6 +3,7 @@ package com.aakbmir.expensetracker.service;
 import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.entity.Expense;
+import com.aakbmir.expensetracker.entity.MonthlyTotal;
 import com.aakbmir.expensetracker.repository.BudgetRepository;
 import com.aakbmir.expensetracker.repository.CategoryRepository;
 import com.aakbmir.expensetracker.repository.ExpenseRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
@@ -58,7 +60,7 @@ public class ReportsService {
 
     public JSONArray calculateMonthlyCategoryView(String parent, int year, int month) {
         List<Category> categories = new ArrayList<>();
-        if(parent !=null) {
+        if (parent != null) {
             categories = categoryRepository.fetchParentCategory(parent);
         } else {
             categories = categoryRepository.findAllByOrderByParentAscCategoryAsc();
@@ -192,48 +194,53 @@ public class ReportsService {
         return parent;
     }
 
-    public JSONObject calculateTrendsOverview(int year, int month) {
-        List<Budget> totalBudget = budgetRepository.findAll();
-        List<Expense> totalExpense = expenseRepository.findAll();
+    public ArrayList calculateTrendsOverview() {
+        List<Budget> budgets = budgetRepository.findAll();
+        List<Expense> expenses = expenseRepository.findAll();
+        Map<String, JSONObject> monthlyTotalsMap = new HashMap<>();
+        DecimalFormat df = new DecimalFormat("#.##");
 
-        Map<YearMonth, Double> monthlyExpenses = new HashMap<>();
+        for (Expense expense : expenses) {
+            String monthYear = getMonthYear(expense.getDate());
+            if (!monthlyTotalsMap.containsKey(monthYear)) {
+                JSONObject json = new JSONObject();
+                json.put("month", monthYear).put("totalExpense", 0.0).put("totalBudget", 0.0);
+                monthlyTotalsMap.put(monthYear, json);
+            }
 
-        for (Expense expense : totalExpense) {
+            JSONObject monthlyTotal = monthlyTotalsMap.get(monthYear);
+            double expObj = (double) monthlyTotal.get("totalExpense");
+            expObj = expObj + (double) expense.getPrice();
+            String formattedValue = df.format(expObj);
+            double result = Double.parseDouble(formattedValue);
+            monthlyTotal.put("totalExpense", result);
 
-            LocalDate localDate = expense.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-
-            YearMonth yearMonth = YearMonth.from(localDate);
-            double price = expense.getPrice();
-
-            monthlyExpenses.put(yearMonth, monthlyExpenses.getOrDefault(yearMonth, 0.0) + price);
         }
 
-        double budget = 0.0;
-        double expense = 0.0;
-        double deviation = 0.0;
 
-
-/*
-        if (!totalBudget.isEmpty()) {
-            for (Double budgetObj : totalBudget) {
-                budget += budgetObj;
+        for (Budget budget : budgets) {
+            String monthYear = getMonthYear(budget.getDate());
+            if (!monthlyTotalsMap.containsKey(monthYear)) {
+                JSONObject json = new JSONObject();
+                json.put("month", monthYear).put("totalExpense", 0.0).put("totalBudget", 0.0);
+                monthlyTotalsMap.put(monthYear, json);
             }
+
+            JSONObject monthlyTotal = monthlyTotalsMap.get(monthYear);
+            double expObj = (double) monthlyTotal.get("totalBudget");
+            expObj = expObj + (double) budget.getPrice();
+            String formattedValue = df.format(expObj);
+            double result = Double.parseDouble(formattedValue);
+
+            monthlyTotal.put("totalBudget", result);
         }
-        List<Double> totalExpense = expenseRepository.getSumByMonthAndYear(year, month);
-        if (!totalExpense.isEmpty()) {
-            for (Double expenseObj : totalExpense) {
-                expense += expenseObj;
-            }
-        }*/
-        BigDecimal b1 = new BigDecimal(Double.toString(budget));
-        BigDecimal b2 = new BigDecimal(Double.toString(expense));
-        deviation = b1.subtract(b2).doubleValue();
-        JSONObject json = new JSONObject();
-        json.put("totalBudget", budget);
-        json.put("totalExpense", expense);
-        json.put("totalDeviation", deviation);
-        return json;
+
+        return new ArrayList<>(monthlyTotalsMap.values());
+    }
+
+    private String getMonthYear(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        return sdf.format(date);
     }
 
 }
