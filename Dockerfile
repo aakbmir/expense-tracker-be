@@ -17,6 +17,6 @@ RUN gradle build --no-daemon
 FROM openjdk:17-jdk-slim-buster
 EXPOSE 8080
 RUN pwd
-RUN mkdir /app
-COPY --from=build /build/libs/expense-tracker-be-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","app.jar"]
+# RUN mkdir /app
+# COPY --from=build /build/libs/expense-tracker-be-0.0.1-SNAPSHOT.jar app.jar
+# ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","app.jar"]
