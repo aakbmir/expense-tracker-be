@@ -14,7 +14,7 @@ FROM gradle:7.6.1-alpine AS build
 COPY . .
 RUN gradle build --no-daemon
 
-FROM openjdk17:alpine
+FROM openjdk:17-jdk-slim-buster
 EXPOSE 8080
 RUN mkdir /app
 COPY --from=build build/libs/expense-tracker-be-0.0.1-SNAPSHOT.jar app.jar
