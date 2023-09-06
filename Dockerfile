@@ -6,7 +6,7 @@ COPY src /app/src
 RUN pwd && ls -la
 RUN gradle build
 
-FROM openjdk:17-jdk-slim-buster
+#
 WORKDIR /app
 RUN pwd && ls -la
 #COPY --from=builder /app/build/libs/expense-tracker-be-0.0.1-SNAPSHOT /app/tracker-expense-be.jar
