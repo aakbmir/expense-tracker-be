@@ -30,15 +30,25 @@ public class ReportsController {
 
     @GetMapping("/monthly-category")
     public ResponseEntity getMonthlyCategory(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        JSONArray expensesForMonth = reportsService.calculateMonthlyCategoryView(Integer.valueOf(year), Integer.valueOf(month));
-        System.out.println(expensesForMonth);
+        JSONArray expensesForMonth = reportsService.calculateMonthlyCategoryView(null,Integer.valueOf(year), Integer.valueOf(month));
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/monthly-parent")
     public ResponseEntity getMonthlyParent(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         JSONArray expensesForMonth = reportsService.calculateMonthlyParentView(Integer.valueOf(year), Integer.valueOf(month));
-        System.out.println(expensesForMonth);
+        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    }
+
+    @GetMapping("/fetch-Parent-Category-Details")
+    public ResponseEntity fetchParentCategoryDetails(@RequestParam(name = "parent") String parent, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        JSONArray expensesForMonth = reportsService.calculateMonthlyCategoryView(parent,Integer.valueOf(year), Integer.valueOf(month));
+        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    }
+
+    @GetMapping("/trends-overview")
+    public ResponseEntity getTrendsOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        JSONObject expensesForMonth = reportsService.calculateTrendsOverview(Integer.valueOf(year), Integer.valueOf(month));
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 }

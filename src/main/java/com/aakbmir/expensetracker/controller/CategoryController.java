@@ -88,7 +88,6 @@ public class CategoryController {
         Optional<Category> categoryObj = categoryService.findById(id);
         String categoryName = categoryObj.get().getCategory();
         categoryService.deleteCategory(id);
-        System.out.println(categoryName);
         Budget budgetObj = budgetService.findByBudget(categoryName);
         budgetService.deleteBudget(budgetObj.getId());
     }

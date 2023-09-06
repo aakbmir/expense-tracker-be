@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 public class ReportsService {
@@ -54,8 +56,13 @@ public class ReportsService {
         return json;
     }
 
-    public JSONArray calculateMonthlyCategoryView(int year, int month) {
-        List<Category> categories = categoryRepository.findAllByOrderByCategoryAsc();
+    public JSONArray calculateMonthlyCategoryView(String parent, int year, int month) {
+        List<Category> categories = new ArrayList<>();
+        if(parent !=null) {
+            categories = categoryRepository.fetchParentCategory(parent);
+        } else {
+            categories = categoryRepository.findAllByOrderByParentAscCategoryAsc();
+        }
         List<Budget> totalBudget = budgetRepository.findByMonthAndYear(year, month);
         List<Expense> totalExpense = expenseRepository.findByMonthAndYear(year, month);
 
@@ -64,6 +71,7 @@ public class ReportsService {
         JSONArray jsonArray = new JSONArray();
         for (Category cat : categories) {
             JSONObject json = new JSONObject();
+            json.put("parent", cat.getParent());
             json.put("category", cat.getCategory());
             json.put("budget", 0);
             json.put("expense", 0.0);
@@ -96,7 +104,6 @@ public class ReportsService {
                     }
                 }
             }
-            System.out.println(json.get("expense"));
             String formattedValue = df.format((double) json.get("budget") - (double) json.get("expense"));
             double result = Double.parseDouble(formattedValue);
             json.put("deviate", result);
@@ -115,7 +122,7 @@ public class ReportsService {
         JSONArray jsonArray = new JSONArray();
         for (String parent : parents) {
             JSONObject json = new JSONObject();
-            json.put("category", parent);
+            json.put("parent", parent);
             json.put("budget", 0.0);
             json.put("expense", 0.0);
             for (Budget budgetObj : totalBudget) {
@@ -166,7 +173,6 @@ public class ReportsService {
                     }
                 }
             }
-            System.out.println(json.get("expense"));
             String formattedValue = df.format((double) json.get("budget") - (double) json.get("expense"));
             double result = Double.parseDouble(formattedValue);
             json.put("deviate", result);
@@ -184,6 +190,50 @@ public class ReportsService {
             }
         }
         return parent;
+    }
+
+    public JSONObject calculateTrendsOverview(int year, int month) {
+        List<Budget> totalBudget = budgetRepository.findAll();
+        List<Expense> totalExpense = expenseRepository.findAll();
+
+        Map<YearMonth, Double> monthlyExpenses = new HashMap<>();
+
+        for (Expense expense : totalExpense) {
+
+            LocalDate localDate = expense.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+
+            YearMonth yearMonth = YearMonth.from(localDate);
+            double price = expense.getPrice();
+
+            monthlyExpenses.put(yearMonth, monthlyExpenses.getOrDefault(yearMonth, 0.0) + price);
+        }
+
+        double budget = 0.0;
+        double expense = 0.0;
+        double deviation = 0.0;
+
+
+/*
+        if (!totalBudget.isEmpty()) {
+            for (Double budgetObj : totalBudget) {
+                budget += budgetObj;
+            }
+        }
+        List<Double> totalExpense = expenseRepository.getSumByMonthAndYear(year, month);
+        if (!totalExpense.isEmpty()) {
+            for (Double expenseObj : totalExpense) {
+                expense += expenseObj;
+            }
+        }*/
+        BigDecimal b1 = new BigDecimal(Double.toString(budget));
+        BigDecimal b2 = new BigDecimal(Double.toString(expense));
+        deviation = b1.subtract(b2).doubleValue();
+        JSONObject json = new JSONObject();
+        json.put("totalBudget", budget);
+        json.put("totalExpense", expense);
+        json.put("totalDeviation", deviation);
+        return json;
     }
 
 }

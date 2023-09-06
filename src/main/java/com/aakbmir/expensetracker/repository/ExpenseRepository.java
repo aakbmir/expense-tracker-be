@@ -12,7 +12,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> findAllByOrderByCategoryAsc();
 
-    @Query("SELECT i FROM Expense i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month order by date ,category asc")
+    @Query("SELECT i FROM Expense i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month order by date desc")
     List<Expense> findByMonthAndYear(int year, int month);
 
     @Query(value= "SELECT b.price FROM expense b WHERE EXTRACT(YEAR FROM b.date) = :year AND EXTRACT(MONTH FROM b.date) = :month", nativeQuery = true)
