@@ -9,7 +9,7 @@ RUN gradle build
 #
 WORKDIR /app
 RUN pwd && ls -la
-WORKDIR /app/build
+WORKDIR /app/build/libs
 RUN pwd && ls -la
 #COPY --from=builder /app/build/libs/expense-tracker-be-0.0.1-SNAPSHOT /app/tracker-expense-be.jar
 #EXPOSE 8080
