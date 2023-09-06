@@ -9,6 +9,8 @@ RUN gradle build
 #
 WORKDIR /app
 RUN pwd && ls -la
+RUN cd build
+RUN pwd && ls -la
 #COPY --from=builder /app/build/libs/expense-tracker-be-0.0.1-SNAPSHOT /app/tracker-expense-be.jar
 #EXPOSE 8080
 #CMD ["java", "-jar", "tracker-expense-be.jar"]
