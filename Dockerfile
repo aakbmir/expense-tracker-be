@@ -12,7 +12,7 @@
 
 # FROM gradle:7.6.1-alpine AS build
 # COPY . .
-# RUN gradle build --no-daemon 
+# RUN gradle build --no-daemon
 # FROM openjdk:17-jdk-slim-buster
 # EXPOSE 8080
 # RUN pwd
@@ -29,6 +29,8 @@ RUN gradle build --no-daemon
 
 FROM openjdk:17-jdk-slim-buster
 WORKDIR /app
+cd /app
+ls
 COPY --from=builder /app/build/libs/expense-tracker-be-0.0.1-SNAPSHOT /app/tracker-expense-be.jar
 EXPOSE 8080
 CMD ["java", "-jar", "tracker-expense-be.jar"]
