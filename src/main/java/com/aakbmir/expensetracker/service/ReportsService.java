@@ -58,6 +58,26 @@ public class ReportsService {
         return json;
     }
 
+    public JSONArray calculateMonthlyDetailsView(String category, int year, int month) {
+        List<Expense> totalExpense = expenseRepository.findCategoryByMonthAndYear(category, year, month);
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        JSONArray jsonArray = new JSONArray();
+
+        for (Expense expenseObj : totalExpense) {
+            JSONObject json = new JSONObject();
+            json.put("category", category);
+            json.put("note", expenseObj.getNote());
+            json.put("date", expenseObj.getDate());
+            json.put("expense", expenseObj.getPrice());
+            jsonArray.put(json);
+        }
+
+
+        return jsonArray;
+    }
+
     public JSONArray calculateMonthlyCategoryView(String parent, int year, int month) {
         List<Category> categories = new ArrayList<>();
         if (parent != null) {

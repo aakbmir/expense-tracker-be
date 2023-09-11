@@ -48,6 +48,12 @@ public class ReportsController {
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 
+    @GetMapping("/fetch-Category-Details")
+    public ResponseEntity fetchCategoryDetails(@RequestParam(name = "category") String category, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        JSONArray expensesForMonth = reportsService.calculateMonthlyDetailsView(category, Integer.valueOf(year), Integer.valueOf(month));
+        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    }
+
     @GetMapping("/trends-overview")
     public ResponseEntity getTrendsOverview() {
         ArrayList<MonthlyTotal> expensesForMonth = reportsService.calculateTrendsOverview();
