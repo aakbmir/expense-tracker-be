@@ -60,9 +60,6 @@ public class ReportsService {
 
     public JSONArray calculateMonthlyDetailsView(String category, int year, int month) {
         List<Expense> totalExpense = expenseRepository.findCategoryByMonthAndYear(category, year, month);
-
-        DecimalFormat df = new DecimalFormat("#.##");
-
         JSONArray jsonArray = new JSONArray();
 
         for (Expense expenseObj : totalExpense) {
@@ -73,7 +70,6 @@ public class ReportsService {
             json.put("expense", expenseObj.getPrice());
             jsonArray.put(json);
         }
-
 
         return jsonArray;
     }
