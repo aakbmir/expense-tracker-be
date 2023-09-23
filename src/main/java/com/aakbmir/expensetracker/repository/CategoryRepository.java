@@ -23,4 +23,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT p FROM Category p where p.parent=:parent order by parent asc")
     List<Category> fetchParentCategory(String parent);
+
+    @Query("SELECT DISTINCT e.category FROM Category e order by e.category asc")
+    List<String> findDistinctCategoriesValue();
 }

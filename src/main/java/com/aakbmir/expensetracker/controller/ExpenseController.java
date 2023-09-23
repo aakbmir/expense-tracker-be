@@ -39,8 +39,8 @@ public class ExpenseController {
         return new ResponseEntity("Success", HttpStatus.OK);
     }
 
-    @GetMapping("/get-expense/{expenseName}")
-    private ResponseEntity getExpense(@PathVariable("expenseName") String expenseName) {
+    @GetMapping("/get-expense")
+    private ResponseEntity getExpense(@RequestParam(name = "expenseName") String expenseName) {
         List<Expense> cat = expenseService.findByCategory(expenseName);
         return new ResponseEntity(cat, HttpStatus.OK);
     }

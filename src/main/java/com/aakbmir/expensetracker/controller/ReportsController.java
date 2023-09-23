@@ -59,4 +59,10 @@ public class ReportsController {
         ArrayList<MonthlyTotal> expensesForMonth = reportsService.calculateTrendsOverview();
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
+
+    @GetMapping("/get-distinct-categories")
+    public ResponseEntity getDistinctCategories() {
+        List<String> catList = reportsService.getDistinctCategories();
+        return new ResponseEntity(catList, HttpStatus.OK);
+    }
 }

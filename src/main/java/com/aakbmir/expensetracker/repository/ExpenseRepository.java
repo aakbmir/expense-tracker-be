@@ -8,7 +8,11 @@ import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    List<Expense> findByCategory(String category);
+    @Query("SELECT e FROM Expense e order by date desc")
+    List<Expense> findAllByCategory();
+
+    @Query("SELECT e FROM Expense e where e.category=:category order by date desc")
+    List<Expense> findCategory(String category);
 
     List<Expense> findAllByOrderByCategoryAsc();
 

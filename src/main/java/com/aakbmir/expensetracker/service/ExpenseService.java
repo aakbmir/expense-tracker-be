@@ -21,7 +21,11 @@ public class ExpenseService {
     }
 
     public List<Expense> findByCategory(String expense) {
-        return expenseRepository.findByCategory(expense);
+        if(expense == null || expense.equalsIgnoreCase("")) {
+            return expenseRepository.findAllByCategory();
+        } else {
+            return expenseRepository.findCategory(expense);
+        }
     }
 
     public Optional<Expense> findById(Long id) {

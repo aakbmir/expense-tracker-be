@@ -259,4 +259,8 @@ public class ReportsService {
         return sdf.format(date);
     }
 
+    public List<String> getDistinctCategories() {
+        return categoryRepository.findDistinctCategoriesValue();
+    }
+
 }
