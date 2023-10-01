@@ -10,19 +10,23 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Category findByCategory(String categoryName);
 
-    List<Category> findAllByOrderByParentAscCategoryAsc();
+    List<Category> findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
 
     List<Category> findAllByOrderByCategoryAsc();
 
-    List<Category> findAllByOrderByParentAsc();
+    List<Category> findAllByOrderByParentCategoryAsc();
 
     /*List<Category> findByMonthYear(String concatField);*/
 
-    @Query("SELECT DISTINCT p.parent FROM Category p order by parent asc")
+    @Query("SELECT DISTINCT p.parentCategory FROM Category p order by parentCategory asc")
     List<String> fetchParentCategory();
 
-    @Query("SELECT p FROM Category p where p.parent=:parent order by parent asc")
-    List<Category> fetchParentCategory(String parent);
+    @Query("SELECT DISTINCT p.superCategory FROM Category p order by parentCategory asc")
+    List<String> fetchSubCategory();
+
+
+    @Query("SELECT p FROM Category p where p.parentCategory=:parentCategory order by parentCategory asc")
+    List<Category> fetchParentCategory(String parentCategory);
 
     @Query("SELECT DISTINCT e.category FROM Category e order by e.category asc")
     List<String> findDistinctCategoriesValue();

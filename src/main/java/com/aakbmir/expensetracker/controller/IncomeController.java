@@ -1,6 +1,5 @@
 package com.aakbmir.expensetracker.controller;
 
-import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Income;
 import com.aakbmir.expensetracker.service.IncomeService;
 import org.json.JSONObject;

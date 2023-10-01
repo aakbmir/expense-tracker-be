@@ -35,10 +35,18 @@ public class CategoryService {
     }
 
     public List<Category> getAllCategories() {
-        return categoryRepository.findAllByOrderByParentAscCategoryAsc();
+        return categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
     }
 
     public List<String> fetchParentCategory() {
         return categoryRepository.fetchParentCategory();
+    }
+
+    public List<String> fetchSubCategory() {
+        return categoryRepository.fetchSubCategory();
+    }
+
+    public List<String> getDistinctCategories() {
+        return categoryRepository.findDistinctCategoriesValue();
     }
 }

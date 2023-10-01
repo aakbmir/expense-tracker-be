@@ -1,9 +1,6 @@
 package com.aakbmir.expensetracker.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "expense_cost")
 public class Expense {
 
     @Id
@@ -23,8 +21,6 @@ public class Expense {
     private Long id;
 
     private String category;
-
-    private String parent;
 
     private double price;
 

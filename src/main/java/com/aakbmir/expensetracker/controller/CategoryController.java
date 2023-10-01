@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @RestController
@@ -28,14 +27,15 @@ public class CategoryController {
 
     @PostMapping("/save-category")
     public ResponseEntity saveCategory(@RequestBody Category category) {
-        if(category != null && category.getCategory() != null && category.getParent() != null){
-            category.setCategory(category.getCategory().toUpperCase());
-            category.setParent(category.getParent().toUpperCase());
+        if (category != null && category.getCategory() != null && category.getParentCategory() != null && category.getSuperCategory() != null) {
+            category.setCategory(category.getCategory());
+            category.setSuperCategory(category.getSuperCategory());
+            category.setParentCategory(category.getParentCategory());
             Category cat = categoryService.saveCategory(category);
             saveBudget(cat);
             return new ResponseEntity(cat, HttpStatus.OK);
         } else {
-            JSONObject json = new JSONObject().put("message","invalid Request");
+            JSONObject json = new JSONObject().put("message", "invalid Request");
             return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -43,7 +43,6 @@ public class CategoryController {
     private void saveBudget(Category cat) {
         Budget budget = new Budget();
         budget.setCategory(cat.getCategory());
-        budget.setParent(cat.getParent());
         budget.setDate(new Date());
         budgetService.saveBudget(budget);
     }
@@ -52,29 +51,16 @@ public class CategoryController {
         Budget budget = new Budget();
         budget.setId(budgetObj.getId());
         budget.setCategory(category.getCategory());
-        budget.setParent(category.getParent());
         budget.setDate(new Date());
         budgetService.saveBudget(budget);
     }
 
-        @PostMapping("/save-mul-category")
+    @PostMapping("/save-mul-category")
     public ResponseEntity saveMulCategory(@RequestBody List<Category> categoryList) {
         for (Category cat : categoryList) {
             saveCategory(cat);
         }
         return new ResponseEntity("Success", HttpStatus.OK);
-    }
-
-    @GetMapping("/fetch-parent-category")
-    public ResponseEntity fetchParentCategory() {
-        List<String> catList = categoryService.fetchParentCategory();
-        return new ResponseEntity(catList, HttpStatus.OK);
-    }
-
-    @GetMapping("/get-category/{categoryName}")
-    private ResponseEntity getCategory(@PathVariable("categoryName") String categoryName) {
-        Category cat = categoryService.findByCategory(categoryName);
-        return new ResponseEntity(cat, HttpStatus.OK);
     }
 
     @GetMapping("/get-all-categories")
@@ -95,14 +81,13 @@ public class CategoryController {
     @PostMapping("/update-category")
     public ResponseEntity updateCategory(@RequestBody Category category) {
         Optional<Category> categoryObj = categoryService.findById(category.getId());
-
         if (categoryObj.isPresent()) {
             Budget budgetObj = budgetService.findByBudget(categoryObj.get().getCategory());
             Category cat = categoryObj.get();
+            cat.setSuperCategory(category.getSuperCategory());
             cat.setCategory(category.getCategory());
-            cat.setParent(category.getParent());
+            cat.setParentCategory(category.getParentCategory());
             Category updateCat = categoryService.updateCategory(cat);
-
             updateBudget(budgetObj, category);
             return new ResponseEntity(updateCat, HttpStatus.OK);
         }

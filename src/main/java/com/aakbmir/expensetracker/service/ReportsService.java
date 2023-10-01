@@ -3,7 +3,6 @@ package com.aakbmir.expensetracker.service;
 import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.entity.Expense;
-import com.aakbmir.expensetracker.entity.MonthlyTotal;
 import com.aakbmir.expensetracker.repository.BudgetRepository;
 import com.aakbmir.expensetracker.repository.CategoryRepository;
 import com.aakbmir.expensetracker.repository.ExpenseRepository;
@@ -15,9 +14,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -79,7 +75,7 @@ public class ReportsService {
         if (parent != null) {
             categories = categoryRepository.fetchParentCategory(parent);
         } else {
-            categories = categoryRepository.findAllByOrderByParentAscCategoryAsc();
+            categories = categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
         }
         List<Budget> totalBudget = budgetRepository.findByMonthAndYear(year, month);
         List<Expense> totalExpense = expenseRepository.findByMonthAndYear(year, month);
@@ -89,7 +85,7 @@ public class ReportsService {
         JSONArray jsonArray = new JSONArray();
         for (Category cat : categories) {
             JSONObject json = new JSONObject();
-            json.put("parent", cat.getParent());
+            json.put("parent", cat.getParentCategory());
             json.put("category", cat.getCategory());
             json.put("budget", 0);
             json.put("expense", 0.0);
@@ -144,7 +140,7 @@ public class ReportsService {
             json.put("budget", 0.0);
             json.put("expense", 0.0);
             for (Budget budgetObj : totalBudget) {
-                if (budgetObj.getParent().equalsIgnoreCase(parent)) {
+                /*if (budgetObj.getParent().equalsIgnoreCase(parent)) {
                     if (json.has("budget")) {
                         double expObj = 0;
                         if (json.get("budget") instanceof Integer) {
@@ -165,10 +161,10 @@ public class ReportsService {
                         double result = Double.parseDouble(formattedValue);
                         json.put("budget", result);
                     }
-                }
+                }*/
             }
             for (Expense expenseObj : totalExpense) {
-                if (expenseObj.getParent().equalsIgnoreCase(parent)) {
+                /*if (expenseObj.getParent().equalsIgnoreCase(parent)) {
                     if (json.has("expense")) {
                         double expObj = 0;
                         if (json.get("expense") instanceof Integer) {
@@ -189,7 +185,7 @@ public class ReportsService {
                         double result = Double.parseDouble(formattedValue);
                         json.put("expense", result);
                     }
-                }
+                }*/
             }
             String formattedValue = df.format((double) json.get("budget") - (double) json.get("expense"));
             double result = Double.parseDouble(formattedValue);
@@ -203,7 +199,7 @@ public class ReportsService {
         String parent = "";
         for (Category category : categories) {
             if (expenseCategory.equalsIgnoreCase(category.getCategory())) {
-                parent = category.getParent();
+                parent = category.getParentCategory();
                 break;
             }
         }

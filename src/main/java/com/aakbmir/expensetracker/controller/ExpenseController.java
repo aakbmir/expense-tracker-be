@@ -1,5 +1,6 @@
 package com.aakbmir.expensetracker.controller;
 
+import com.aakbmir.expensetracker.DTO.ExpenseDTO;
 import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.service.ExpenseService;
 import org.json.JSONObject;
@@ -31,33 +32,16 @@ public class ExpenseController {
         }
     }
 
-    @PostMapping("/save-mul-expense")
-    public ResponseEntity saveMulExpense(@RequestBody List<Expense> expenseList) {
-        for (Expense cat : expenseList) {
-            expenseService.saveExpense(cat);
-        }
-        return new ResponseEntity("Success", HttpStatus.OK);
-    }
-
     @GetMapping("/get-expense")
     private ResponseEntity getExpense(@RequestParam(name = "expenseName") String expenseName) {
-        List<Expense> cat = expenseService.findByCategory(expenseName);
-        return new ResponseEntity(cat, HttpStatus.OK);
+        List<Expense> expense = expenseService.findByCategory(expenseName);
+        return new ResponseEntity(expense, HttpStatus.OK);
     }
 
     @GetMapping("/get-current-expense")
     public ResponseEntity getCurrentExpense(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<Expense> expensesForMonth = expenseService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
+        List<ExpenseDTO> expensesForMonth = expenseService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
         return new ResponseEntity(expensesForMonth, HttpStatus.OK);
-
-//        String response = "[{\"id\":2,\"category\":\"Parking\",\"price\":100,\"date\":\"2023-09-01T20:00:00.000+00:00\",\"note\":\"Top Up\"},{\"id\":2,\"category\":\"Washing\",\"price\":34,\"date\":\"2023-09-01T20:00:00.000+00:00\",\"note\":\"Al Helal\"},{\"id\":2,\"category\":\"Grocery\",\"price\":124,\"date\":\"2023-09-02T20:00:00.000+00:00\",\"note\":\"Lulu\"},{\"id\":2,\"category\":\"Home\",\"price\":455,\"date\":\"2023-09-03T20:00:00.000+00:00\",\"note\":\"Abu Transfer\"},{\"id\":2,\"category\":\"LIC\",\"price\":100,\"date\":\"2023-09-03T20:00:00.000+00:00\",\"note\":\"Premium\"}]";
-//        return new ResponseEntity(response.toString(), HttpStatus.OK);
-    }
-
-    @GetMapping("/get-all-expenses")
-    public ResponseEntity getAllExpense() {
-        List<Expense> catList = expenseService.getAllExpenses();
-        return new ResponseEntity(catList, HttpStatus.OK);
     }
 
     @DeleteMapping("/del-expense/{id}")
@@ -67,17 +51,15 @@ public class ExpenseController {
 
     @PostMapping("/update-expense")
     public ResponseEntity updateExpense(@RequestBody Expense expense) {
-        Optional<Expense> expenseObj = expenseService.findById(expense.getId());
-
-        if (expenseObj.isPresent()) {
-            Expense cat = expenseObj.get();
-            cat.setId(expense.getId());
-            cat.setCategory(expense.getCategory());
-            cat.setPrice(expense.getPrice());
-            cat.setParent(expense.getParent());
-            cat.setDate(expense.getDate());
-            cat.setNote(expense.getNote());
-            Expense updateCat = expenseService.updateExpense(cat);
+        Optional<Expense> expenseData = expenseService.findById(expense.getId());
+        if (expenseData.isPresent()) {
+            Expense expenseObj = expenseData.get();
+            expenseObj.setId(expense.getId());
+            expenseObj.setCategory(expense.getCategory());
+            expenseObj.setPrice(expense.getPrice());
+            expenseObj.setDate(expense.getDate());
+            expenseObj.setNote(expense.getNote());
+            Expense updateCat = expenseService.updateExpense(expenseObj);
             return new ResponseEntity(updateCat, HttpStatus.OK);
         }
         return new ResponseEntity(expense, HttpStatus.OK);

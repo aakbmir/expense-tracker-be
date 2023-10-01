@@ -1,23 +1,17 @@
-package com.aakbmir.expensetracker.entity;
+package com.aakbmir.expensetracker.DTO;
 
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
 
-
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
 @Setter
-@Table(name = "budget_allocation")
-public class Budget {
+public class ExpenseDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String category;
@@ -25,5 +19,11 @@ public class Budget {
     private double price;
 
     private Date date;
+
+    private String note;
+
+    private String parentCategory;
+
+    private String superCategory;
 
 }
