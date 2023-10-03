@@ -1,6 +1,5 @@
 package com.aakbmir.expensetracker.controller;
 
-import com.aakbmir.expensetracker.DTO.ExpenseDTO;
 import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.service.ExpenseService;
 import org.json.JSONObject;
@@ -40,7 +39,7 @@ public class ExpenseController {
 
     @GetMapping("/get-current-expense")
     public ResponseEntity getCurrentExpense(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<ExpenseDTO> expensesForMonth = expenseService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
+        List<Expense> expensesForMonth = expenseService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
         return new ResponseEntity(expensesForMonth, HttpStatus.OK);
     }
 
@@ -57,9 +56,10 @@ public class ExpenseController {
             expenseObj.setId(expense.getId());
             expenseObj.setCategory(expense.getCategory());
             expenseObj.setPrice(expense.getPrice());
+            expenseObj.setCompleted(expense.getCompleted());
             expenseObj.setDate(expense.getDate());
             expenseObj.setNote(expense.getNote());
-            Expense updateCat = expenseService.updateExpense(expenseObj);
+            Expense updateCat = expenseService.saveExpense(expenseObj);
             return new ResponseEntity(updateCat, HttpStatus.OK);
         }
         return new ResponseEntity(expense, HttpStatus.OK);

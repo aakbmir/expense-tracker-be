@@ -2,6 +2,7 @@ package com.aakbmir.expensetracker.service;
 
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.repository.CategoryRepository;
+import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,28 +15,31 @@ public class CategoryService {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    CommonUtils commonUtils;
+
     public Category saveCategory(Category category) {
-        return categoryRepository.save(category);
+        Category cat = categoryRepository.save(category);
+        CommonUtils.categoryListCache.clear();
+        return cat;
     }
 
     public Category findByCategory(String category) {
         return categoryRepository.findByCategory(category);
     }
 
-    public Optional<Category> findById(Long id) {
-        return categoryRepository.findById(id);
+    public Category findById(Long id) {
+        return commonUtils.fetchCategoryByID(id);
+
     }
 
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
-    }
-
-    public Category updateCategory(Category category) {
-        return categoryRepository.save(category);
+        CommonUtils.categoryListCache.clear();
     }
 
     public List<Category> getAllCategories() {
-        return categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
+        return commonUtils.fetchAllCategories();
     }
 
     public List<String> fetchParentCategory() {
@@ -43,10 +47,10 @@ public class CategoryService {
     }
 
     public List<String> fetchSubCategory() {
-        return categoryRepository.fetchSubCategory();
+        return categoryRepository.fetchDistinctSubCategories();
     }
 
     public List<String> getDistinctCategories() {
-        return categoryRepository.findDistinctCategoriesValue();
+        return categoryRepository.findDistinctCategories();
     }
 }

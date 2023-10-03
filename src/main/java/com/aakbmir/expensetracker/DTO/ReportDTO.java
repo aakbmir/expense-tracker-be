@@ -1,4 +1,4 @@
-package com.aakbmir.expensetracker.entity;
+package com.aakbmir.expensetracker.DTO;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,17 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "expense_cost")
-public class Expense {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ReportDTO {
 
     private String category;
 
@@ -26,11 +20,9 @@ public class Expense {
 
     private String superCategory;
 
-    private double price;
-
-    private Date date;
-
-    private String note;
+    private double budget;
 
     private String completed;
+
+    private  double expense;
 }

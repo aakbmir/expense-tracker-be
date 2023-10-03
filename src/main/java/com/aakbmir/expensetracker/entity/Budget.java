@@ -22,6 +22,10 @@ public class Budget {
 
     private String category;
 
+    private String parentCategory;
+
+    private String superCategory;
+
     private double price;
 
     private Date date;

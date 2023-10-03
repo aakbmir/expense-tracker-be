@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "category_allotment")
-public class Category {
+public class Category implements Comparable<Category> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +24,9 @@ public class Category {
     @Column(unique = true)
     private String category;
 
+    @Override
+    public int compareTo(Category d) {
+        return this.category.compareTo(d.getCategory());
+    }
 
 }

@@ -1,6 +1,6 @@
 package com.aakbmir.expensetracker.entity;
 
-public class MonthlyTotal {
+public class MonthlyTotal implements Comparable<MonthlyTotal> {
 
     private String monthYear;
     private double totalExpense;
@@ -45,5 +45,10 @@ public class MonthlyTotal {
                 ", totalExpense=" + totalExpense +
                 ", totalBudget=" + totalBudget +
                 '}';
+    }
+
+    @Override
+    public int compareTo(MonthlyTotal o) {
+        return this.monthYear.compareTo(o.getMonthYear());
     }
 }

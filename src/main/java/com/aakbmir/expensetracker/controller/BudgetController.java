@@ -1,8 +1,10 @@
 package com.aakbmir.expensetracker.controller;
 
-import com.aakbmir.expensetracker.DTO.BudgetDTO;
 import com.aakbmir.expensetracker.entity.Budget;
+import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.service.BudgetService;
+import com.aakbmir.expensetracker.service.CategoryService;
+import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class BudgetController {
     @Autowired
     BudgetService budgetService;
 
+    @Autowired
+    CommonUtils commonUtils;
+
     @GetMapping("/add-all-budgets")
     public ResponseEntity addAllBudgets() {
         List<Budget> isAdded = budgetService.addAllBudgets();
@@ -29,6 +34,15 @@ public class BudgetController {
     @PostMapping("/save-budget")
     public ResponseEntity saveBudget(@RequestBody Budget budget) {
         if (budget != null && budget.getCategory() != null && budget.getDate() != null) {
+            Category category = null;
+            for (Category cat : commonUtils.fetchAllCategories()) {
+                if (budget.getCategory().equalsIgnoreCase(cat.getCategory())) {
+                    category = cat;
+                    break;
+                }
+            }
+            budget.setParentCategory(category.getParentCategory());
+            budget.setSuperCategory(category.getSuperCategory());
             Budget cat = budgetService.saveBudget(budget);
             return new ResponseEntity(cat, HttpStatus.OK);
         } else {
@@ -39,21 +53,13 @@ public class BudgetController {
 
     @GetMapping("/get-current-budget")
     public ResponseEntity getCurrentBudget(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<BudgetDTO> budgetsForMonth = budgetService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
+        List<Budget> budgetsForMonth = budgetService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
         return new ResponseEntity(budgetsForMonth, HttpStatus.OK);
     }
 
     @PostMapping("/update-budget")
     public ResponseEntity updateBudget(@RequestBody Budget budget) {
-        Optional<Budget> budgetObj = budgetService.findById(budget.getId());
-        if (budgetObj.isPresent()) {
-            Budget cat = budgetObj.get();
-            cat.setCategory(budget.getCategory());
-            cat.setDate(budget.getDate());
-            cat.setPrice(budget.getPrice());
-            Budget updateCat = budgetService.updateBudget(cat);
-            return new ResponseEntity(updateCat, HttpStatus.OK);
-        }
-        return new ResponseEntity(budget, HttpStatus.OK);
+        Budget updateCat = budgetService.updateBudget(budget);
+        return new ResponseEntity(updateCat, HttpStatus.OK);
     }
 }

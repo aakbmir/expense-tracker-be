@@ -43,6 +43,8 @@ public class CategoryController {
     private void saveBudget(Category cat) {
         Budget budget = new Budget();
         budget.setCategory(cat.getCategory());
+        budget.setParentCategory(cat.getParentCategory());
+        budget.setSuperCategory(cat.getSuperCategory());
         budget.setDate(new Date());
         budgetService.saveBudget(budget);
     }
@@ -50,7 +52,10 @@ public class CategoryController {
     private void updateBudget(Budget budgetObj, Category category) {
         Budget budget = new Budget();
         budget.setId(budgetObj.getId());
+        budget.setPrice(budgetObj.getPrice());
         budget.setCategory(category.getCategory());
+        budget.setParentCategory(category.getParentCategory());
+        budget.setSuperCategory(category.getSuperCategory());
         budget.setDate(new Date());
         budgetService.saveBudget(budget);
     }
@@ -71,8 +76,8 @@ public class CategoryController {
 
     @DeleteMapping("/del-category/{id}")
     private void deleteCategory(@PathVariable("id") Long id) {
-        Optional<Category> categoryObj = categoryService.findById(id);
-        String categoryName = categoryObj.get().getCategory();
+        Category categoryObj = categoryService.findById(id);
+        String categoryName = categoryObj.getCategory();
         categoryService.deleteCategory(id);
         Budget budgetObj = budgetService.findByBudget(categoryName);
         budgetService.deleteBudget(budgetObj.getId());
@@ -80,14 +85,13 @@ public class CategoryController {
 
     @PostMapping("/update-category")
     public ResponseEntity updateCategory(@RequestBody Category category) {
-        Optional<Category> categoryObj = categoryService.findById(category.getId());
-        if (categoryObj.isPresent()) {
-            Budget budgetObj = budgetService.findByBudget(categoryObj.get().getCategory());
-            Category cat = categoryObj.get();
+        Category cat = categoryService.findById(category.getId());
+        if (cat != null) {
+            Budget budgetObj = budgetService.findByBudget(cat.getCategory());
             cat.setSuperCategory(category.getSuperCategory());
             cat.setCategory(category.getCategory());
             cat.setParentCategory(category.getParentCategory());
-            Category updateCat = categoryService.updateCategory(cat);
+            Category updateCat = categoryService.saveCategory(cat);
             updateBudget(budgetObj, category);
             return new ResponseEntity(updateCat, HttpStatus.OK);
         }

@@ -1,10 +1,9 @@
 package com.aakbmir.expensetracker.service;
 
-import com.aakbmir.expensetracker.DTO.BudgetDTO;
-import com.aakbmir.expensetracker.DTO.ExpenseDTO;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.repository.ExpenseRepository;
+import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,19 @@ public class ExpenseService {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    CommonUtils commonUtils;
+
     public Expense saveExpense(Expense expense) {
+        Category category = null;
+        for (Category cat : commonUtils.fetchAllCategories()) {
+            if (expense.getCategory().equalsIgnoreCase(cat.getCategory())) {
+                category = cat;
+                break;
+            }
+        }
+        expense.setParentCategory(category.getParentCategory());
+        expense.setSuperCategory(category.getSuperCategory());
         return expenseRepository.save(expense);
     }
 
@@ -49,37 +60,8 @@ public class ExpenseService {
         return expenseRepository.findAllByOrderByCategoryAsc();
     }
 
-    public List<ExpenseDTO> findByMonthAndYear(int year, int month) {
+    public List<Expense> findByMonthAndYear(int year, int month) {
         List<Expense> expenseList = expenseRepository.findByMonthAndYear(year, month);
-        for(Expense exp: expenseList) {
-            System.out.println(exp.getCategory() + " " + exp.getDate() + " " + exp.getNote() + " " + exp.getPrice());
-        }
-        List<Category> categoryList = categoryService.getAllCategories();
-        List<ExpenseDTO> expenseDTOList = convertToExpenseDTO(expenseList, categoryList);
-        return expenseDTOList;
-    }
-
-    private List<ExpenseDTO> convertToExpenseDTO(List<Expense> expenseList, List<Category> categoryList) {
-        List<ExpenseDTO> mergedList = expenseList.stream()
-                .map(list1Item -> {
-                    Category list2Item = categoryList.stream()
-                            .filter(item -> item.getCategory().equals(list1Item.getCategory()))
-                            .findFirst()
-                            .orElse(null);
-
-                    ExpenseDTO mergedResponse = new ExpenseDTO();
-                    mergedResponse.setId(list1Item.getId());
-                    mergedResponse.setDate(list1Item.getDate());
-                    mergedResponse.setCategory(list1Item.getCategory());
-                    mergedResponse.setPrice(list1Item.getPrice());
-                    mergedResponse.setNote(list1Item.getNote());
-                    if (list2Item != null) {
-                        mergedResponse.setParentCategory(list2Item.getParentCategory());
-                        mergedResponse.setSuperCategory(list2Item.getSuperCategory());
-                    }
-                    return mergedResponse;
-                })
-                .collect(Collectors.toList());
-        return mergedList;
+        return expenseList;
     }
 }
