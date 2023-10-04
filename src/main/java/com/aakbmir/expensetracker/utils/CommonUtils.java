@@ -98,8 +98,7 @@ public class CommonUtils {
         List<Category> categoryList = categoryListCache;
         return categoryList.stream().filter(item -> item.getId() == id).collect(Collectors.toList()).get(0);
     }
-
-
+    
     public static String getMonthYear(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         return sdf.format(date);
