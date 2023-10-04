@@ -19,6 +19,9 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
     @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month order by b.category asc")
     List<Budget> findByMonthAndYear(int year, int month);
 
+    @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year order by b.category asc")
+    List<Budget> findByYear(int year);
+
     @Query(value= "SELECT b.price FROM budget b WHERE EXTRACT(YEAR FROM b.date) = :year AND EXTRACT(MONTH FROM b.date) = :month", nativeQuery = true)
     List<Double> getSumByMonthAndYear(int year, int month);
 

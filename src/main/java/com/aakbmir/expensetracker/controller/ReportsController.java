@@ -50,17 +50,18 @@ public class ReportsController {
     public ResponseEntity getDistinctCategories() {
         List<String> catList = reportsService.getDistinctCategories();
         return new ResponseEntity(catList, HttpStatus.OK);
-    }*/
-
-    @GetMapping("/overview-report")
-    public ResponseEntity getMonthlyOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        JSONArray expensesForMonth = reportsService.calculateDataForOverviewReport(Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/category-report")
     public ResponseEntity getCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         JSONArray expensesForMonth = reportsService.calculateDataForCategoryReport(Integer.valueOf(year), Integer.valueOf(month));
+        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    }
+    */
+
+    @GetMapping("/overview-report")
+    public ResponseEntity getMonthlyOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        JSONArray expensesForMonth = reportsService.calculateDataForOverviewReport(year, month);
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 
@@ -82,16 +83,15 @@ public class ReportsController {
         return new ResponseEntity(json, HttpStatus.OK);
     }
 
-
     @GetMapping("/trends-report")
     public ResponseEntity getTrendsOverview() {
         ArrayList<MonthlyTotal> expensesForMonth = reportsService.calculateDataForTrendsReport();
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 
-    @GetMapping("/general")
-    public ResponseEntity general(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<ParentCategoryDTO>  list = reportsService.general(Integer.valueOf(year), Integer.valueOf(month));
+    @GetMapping("/category-report")
+    public ResponseEntity getCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        List<ParentCategoryDTO> list = reportsService.calculateDataForCategoryReport(year, month);
         return new ResponseEntity(list, HttpStatus.OK);
     }
 }

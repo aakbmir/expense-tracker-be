@@ -34,10 +34,18 @@ public class ReportsService {
     @Autowired
     CommonUtils commonUtils;
 
-    public JSONArray calculateDataForOverviewReport(int year, int month) {
+    public JSONArray calculateDataForOverviewReport(String requestedYear, String requestedMonth) {
+
+        List<Budget> totalBudget = null;
+        List<Expense> totalExpense = null;
+        if (requestedMonth.equalsIgnoreCase ("All")) {
+            totalBudget = budgetRepository.findByYear(Integer.valueOf(requestedYear));
+            totalExpense = expenseRepository.findByYear(Integer.valueOf(requestedYear));
+        } else  {
+            totalBudget = budgetRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
+            totalExpense = expenseRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
+        }
         List<String> categoryList = commonUtils.fetchDistinctSubCategories();
-        List<Budget> totalBudget = budgetRepository.findByMonthAndYear(year, month);
-        List<Expense> totalExpense = expenseRepository.findByMonthAndYear(year, month);
 
         DecimalFormat df = new DecimalFormat("#.##");
 
@@ -95,83 +103,6 @@ public class ReportsService {
                     }
                 }
             }
-            if (!json.has("expense")) {
-                json.put("expense", 0.0);
-            }
-
-            String formattedValue = df.format((double) json.get("budget") - (double) json.get("expense"));
-            double result = Double.parseDouble(formattedValue);
-            json.put("deviate", result);
-            jsonArray.put(json);
-        }
-        return jsonArray;
-    }
-
-    public JSONArray calculateDataForCategoryReport(int year, int month) {
-        List<Category> categoryList = commonUtils.fetchAllCategories();
-        Collections.sort(categoryList);
-        List<Budget> totalBudget = budgetRepository.findByMonthAndYear(year, month);
-        List<Expense> totalExpense = expenseRepository.findByMonthAndYear(year, month);
-
-        DecimalFormat df = new DecimalFormat("#.##");
-
-        JSONArray jsonArray = new JSONArray();
-        for (Category cat : categoryList) {
-            JSONObject json = new JSONObject();
-            json.put("category", cat.getCategory());
-            json.put("superCategory", cat.getSuperCategory());
-            json.put("parentCategory", cat.getParentCategory());
-            for (Budget budgetObj : totalBudget) {
-                if (budgetObj.getCategory().equalsIgnoreCase(cat.getCategory())) {
-                    if (json.has("budget")) {
-                        double budObj = 0;
-                        if (json.get("budget") instanceof Integer) {
-                            budObj = (double) json.get("budget");
-                        } else if (json.get("budget") instanceof Double) {
-                            budObj = (double) json.get("budget");
-                        } else if (json.get("budget") instanceof Long) {
-                            budObj = (double) json.get("budget");
-                        } else {
-                            budObj = (double) json.get("budget");
-                        }
-                        budObj = budObj + (double) budgetObj.getPrice();
-                        String formattedValue = df.format(budObj);
-                        double result = Double.parseDouble(formattedValue);
-                        json.put("budget", result);
-                    } else {
-                        String formattedValue = df.format(budgetObj.getPrice());
-                        double result = Double.parseDouble(formattedValue);
-                        json.put("budget", result);
-                    }
-                }
-            }
-            for (Expense expenseObj : totalExpense) {
-                if (expenseObj.getCategory().equalsIgnoreCase(cat.getCategory())) {
-                    json.put("completed", expenseObj.getCompleted());
-                    if (json.has("expense")) {
-                        double expObj = 0;
-                        if (json.get("expense") instanceof Integer) {
-                            expObj = (double) json.get("expense");
-                        } else if (json.get("expense") instanceof Double) {
-                            expObj = (double) json.get("expense");
-                        } else if (json.get("expense") instanceof Long) {
-                            expObj = (double) json.get("expense");
-                        } else {
-                            expObj = (double) json.get("expense");
-                        }
-                        expObj = expObj + (double) expenseObj.getPrice();
-                        String formattedValue = df.format(expObj);
-                        double result = Double.parseDouble(formattedValue);
-                        json.put("expense", result);
-                    } else {
-                        String formattedValue = df.format(expenseObj.getPrice());
-                        double result = Double.parseDouble(formattedValue);
-                        json.put("expense", result);
-                    }
-                }
-            }
-
-
             if (!json.has("expense")) {
                 json.put("expense", 0.0);
             }
@@ -302,12 +233,19 @@ public class ReportsService {
         return new ArrayList<>(monthlyTotalsMap.values());
     }
 
-
-    public List<ParentCategoryDTO> general(Integer year, Integer month) {
+    public List<ParentCategoryDTO> calculateDataForCategoryReport(String requestedYear, String requestedMonth) {
         List<Category> categoryList = commonUtils.fetchAllCategories();
         Collections.sort(categoryList);
-        List<Budget> budgetList = budgetRepository.findByMonthAndYear(year, month);
-        List<Expense> expenseList = expenseRepository.findByMonthAndYear(year, month);
+
+        List<Budget> budgetList = null;
+        List<Expense> expenseList = null;
+        if (requestedMonth.equalsIgnoreCase ("All")) {
+            budgetList = budgetRepository.findByYear(Integer.valueOf(requestedYear));
+            expenseList = expenseRepository.findByYear(Integer.valueOf(requestedYear));
+        } else {
+            budgetList = budgetRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
+            expenseList = expenseRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
+        }
 
         List<String> distinctParentCatList = categoryList.stream().map(Category::getParentCategory).distinct().collect(Collectors.toList());
         System.out.println(distinctParentCatList);
