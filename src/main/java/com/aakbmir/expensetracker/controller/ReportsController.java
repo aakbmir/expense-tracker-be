@@ -5,6 +5,7 @@ import com.aakbmir.expensetracker.DTO.ReportDTO;
 import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.entity.MonthlyTotal;
 import com.aakbmir.expensetracker.service.ReportsService;
+import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -93,5 +94,11 @@ public class ReportsController {
     public ResponseEntity getCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<ParentCategoryDTO> list = reportsService.calculateDataForCategoryReport(year, month);
         return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/refresh-cache")
+    public ResponseEntity refreshCache() {
+        CommonUtils.categoryListCache.clear();
+        return new ResponseEntity("success", HttpStatus.OK);
     }
 }
