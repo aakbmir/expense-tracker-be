@@ -14,17 +14,21 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e where e.category=:category order by date desc")
     List<Expense> findCategory(String category);
 
-    List<Expense> findAllByOrderByCategoryAsc();
-
     List<Expense> findAllByOrderByDateAsc();
 
-    @Query("SELECT i FROM Expense i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month order by date desc")
+    @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
     List<Expense> findByMonthAndYear(int year, int month);
 
-    @Query("SELECT i FROM Expense i WHERE YEAR(i.date) = :year order by date desc")
+    @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year order by date desc")
     List<Expense> findByYear(int year);
-/*
-    @Query(value= "SELECT b.price FROM expense b WHERE EXTRACT(YEAR FROM b.date) = :year AND EXTRACT(MONTH FROM b.date) = :month", nativeQuery = true)
-    List<Double> getSumByMonthAndYear(int year, int month);
-    */
+
+    @Query("SELECT e FROM Expense e WHERE e.parentCategory=:parentCategory and category != 'Stocks' order by e.date desc")
+    List<Expense> fetchParentCategoryExpense(String parentCategory);
+
+    @Query("SELECT sum(price) FROM Expense e WHERE YEAR(e.date) = :year")
+    double fetchSumByYear(int year);
+
+    @Query("SELECT TO_CHAR(date, 'YYYY-MM') AS month, SUM(price) AS total_price FROM Expense ec  GROUP BY TO_CHAR(date, 'YYYY-MM') ORDER BY month")
+    List<Object[]> fetchSumByYearAndMonth();
+
 }

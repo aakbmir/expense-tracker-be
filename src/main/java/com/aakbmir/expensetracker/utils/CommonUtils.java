@@ -29,45 +29,6 @@ public class CommonUtils {
                 "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"});
     }
 
-    public static String getCurrentMonth() {
-        LocalDate currentDate = LocalDate.now();
-
-        Month currentMonth = currentDate.getMonth();
-        switch (currentMonth.toString()) {
-            case "JANUARY":
-                return "Jan";
-            case "FEBRUARY":
-                return "Feb";
-            case "MARCH":
-                return "Mar";
-            case "APRIL":
-                return "Apr";
-            case "MAY":
-                return "May";
-            case "JUNE":
-                return "Jun";
-            case "JULY":
-                return "Jul";
-            case "AUGUST":
-                return "Aug";
-            case "SEPTEMBER":
-                return "Sep";
-            case "OCTOBER":
-                return "Oct";
-            case "NOVEMBER":
-                return "Nov";
-            case "DECEMBER":
-                return "Dec";
-            default:
-                return "";
-        }
-    }
-
-    public static int getCurrentYear() {
-        LocalDate currentDate = LocalDate.now();
-        return currentDate.getYear();
-    }
-
     public static String toUtc(Date date) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");

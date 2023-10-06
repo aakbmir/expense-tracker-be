@@ -44,14 +44,6 @@ public class IncomeController {
         return new ResponseEntity(cat, HttpStatus.OK);
     }
 
-/*
-    @GetMapping("/get-current-income")
-    public ResponseEntity getCurrentIncome(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<Income> incomesForMonth = incomeService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(incomesForMonth, HttpStatus.OK);
-    }
-*/
-
     @GetMapping("/get-all-incomes")
     public ResponseEntity getAllIncome() {
         List<Income> catList = incomeService.getAllIncomes();

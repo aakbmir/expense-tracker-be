@@ -11,9 +11,6 @@ import java.util.List;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
     Budget findByCategory(String budgetName);
 
-    @Query(value = "select * from budget b order by b.category asc", nativeQuery = true)
-    List<Budget> fetchDateByDate(String date);
-
     List<Budget> findAllByOrderByDateAsc();
 
     @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month order by b.category asc")
@@ -22,10 +19,9 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
     @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year order by b.category asc")
     List<Budget> findByYear(int year);
 
-    @Query(value= "SELECT b.price FROM budget b WHERE EXTRACT(YEAR FROM b.date) = :year AND EXTRACT(MONTH FROM b.date) = :month", nativeQuery = true)
-    List<Double> getSumByMonthAndYear(int year, int month);
+    @Query("SELECT sum(price) FROM Budget e WHERE YEAR(e.date) = :year")
+    double fetchSumByYear(int year);
 
-    @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month and category = :category order by b.category asc")
-    List<Budget> findCategoryByMonthAndYear(int year, int month, String category);
-
+    @Query("SELECT TO_CHAR(date, 'YYYY-MM') AS month, SUM(price) AS total_price FROM Budget ec GROUP BY TO_CHAR(date, 'YYYY-MM') ORDER BY month")
+    List<Object[]> fetchSumByYearAndMonth();
 }

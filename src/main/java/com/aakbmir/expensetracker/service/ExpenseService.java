@@ -9,16 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ExpenseService {
     
     @Autowired
     ExpenseRepository expenseRepository;
-
-    @Autowired
-    CategoryService categoryService;
 
     @Autowired
     CommonUtils commonUtils;
@@ -52,16 +48,7 @@ public class ExpenseService {
         expenseRepository.deleteById(id);
     }
 
-    public Expense updateExpense(Expense expense) {
-        return expenseRepository.save(expense);
-    }
-
-    public List<Expense> getAllExpenses() {
-        return expenseRepository.findAllByOrderByCategoryAsc();
-    }
-
     public List<Expense> findByMonthAndYear(int year, int month) {
-        List<Expense> expenseList = expenseRepository.findByMonthAndYear(year, month);
-        return expenseList;
+        return expenseRepository.findByMonthAndYear(year, month);
     }
 }

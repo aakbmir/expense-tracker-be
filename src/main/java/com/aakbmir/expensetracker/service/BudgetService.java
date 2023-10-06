@@ -34,11 +34,9 @@ public class BudgetService {
             budgetObj.setParentCategory(cat.getParentCategory());
             budgetList.add(budgetObj);
         }
-
         budgetList = budgetRepository.saveAll(budgetList);
         return budgetList;
     }
-
 
     public Budget saveBudget(Budget budget) {
         return budgetRepository.save(budget);
@@ -62,7 +60,6 @@ public class BudgetService {
 
     public List<Budget> findByMonthAndYear(int year, int month) {
         List<Budget> budgetList = budgetRepository.findByMonthAndYear(year, month);
-        List<Category> categoryList = categoryService.getAllCategories();
         return budgetList;
     }
 }

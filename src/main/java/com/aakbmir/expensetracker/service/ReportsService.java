@@ -38,10 +38,10 @@ public class ReportsService {
 
         List<Budget> totalBudget = null;
         List<Expense> totalExpense = null;
-        if (requestedMonth.equalsIgnoreCase ("All")) {
+        if (requestedMonth.equalsIgnoreCase("All")) {
             totalBudget = budgetRepository.findByYear(Integer.valueOf(requestedYear));
             totalExpense = expenseRepository.findByYear(Integer.valueOf(requestedYear));
-        } else  {
+        } else {
             totalBudget = budgetRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
             totalExpense = expenseRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
         }
@@ -239,7 +239,7 @@ public class ReportsService {
 
         List<Budget> budgetList = null;
         List<Expense> expenseList = null;
-        if (requestedMonth.equalsIgnoreCase ("All")) {
+        if (requestedMonth.equalsIgnoreCase("All")) {
             budgetList = budgetRepository.findByYear(Integer.valueOf(requestedYear));
             expenseList = expenseRepository.findByYear(Integer.valueOf(requestedYear));
         } else {
@@ -280,7 +280,7 @@ public class ReportsService {
                 parentCatBudget = parentCatBudget + superCategoryDTO.getBudget();
                 parentCatExpense = parentCatExpense + superCategoryDTO.getExpense();
                 List<String> completedList = catDtoList.stream().map(CategoryDTO::getCompleted).distinct().collect(Collectors.toList());
-                if(!completedList.isEmpty() && completedList.size() == 1) {
+                if (!completedList.isEmpty() && completedList.size() == 1) {
                     superCategoryDTO.setCompleted(completedList.get(0));
                 } else {
                     superCategoryDTO.setCompleted("Partial");
@@ -291,7 +291,7 @@ public class ReportsService {
             parentCategoryDTO.setExpense(parentCatExpense);
             parentCategoryDTO.setSuperCategoryDtoList(superCatDtoList);
             List<String> completedList = superCatDtoList.stream().map(SuperCategoryDTO::getCompleted).distinct().collect(Collectors.toList());
-            if(!completedList.isEmpty() && completedList.size() == 1) {
+            if (!completedList.isEmpty() && completedList.size() == 1) {
                 parentCategoryDTO.setCompleted(completedList.get(0));
             } else {
                 parentCategoryDTO.setCompleted("Partial");
@@ -314,7 +314,7 @@ public class ReportsService {
     private JSONObject calculateExpenseValue(String category, List<Expense> expenseList) {
         JSONObject json = new JSONObject();
         List<Expense> expenseFilteredList = expenseList.stream().filter(item -> item.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
-        if(!expenseFilteredList.isEmpty()) {
+        if (!expenseFilteredList.isEmpty()) {
             double sum = expenseFilteredList.stream()
                     .mapToDouble(Expense::getPrice)
                     .sum();
@@ -322,7 +322,7 @@ public class ReportsService {
             String result = "Partial";
             List<String> completedList = expenseFilteredList.stream().map(Expense::getCompleted).distinct().collect(Collectors.toList());
             if (!completedList.isEmpty() && completedList.size() == 1) {
-                json.put("completed", completedList.get(0).equalsIgnoreCase("No") ? "Partial": "Yes");
+                json.put("completed", completedList.get(0).equalsIgnoreCase("No") ? "Partial" : "Yes");
             } else {
                 json.put("completed", "Partial");
             }
@@ -340,5 +340,89 @@ public class ReportsService {
                 .mapToDouble(Budget::getPrice)
                 .sum();
         return sum;
+    }
+
+/*    public JSONObject calculateDataForSavingsReport(String requestedYear, String requestedMonth) {
+        JSONObject accountObj = new JSONObject();
+        JSONObject investObj = new JSONObject();
+        JSONObject json = new JSONObject();
+
+        for (Expense exp : expenseList) {
+            switch (exp.getCategory()) {
+                case "FRE":
+                    accountObj.put("fre", ((accountObj.has("fre") ? (double)accountObj.get("fre") : 0) + exp.getPrice()));
+                    break;
+                case "NRE":
+                    accountObj.put("nre", ((accountObj.has("nre") ? (double)accountObj.get("nre") : 0) + exp.getPrice()));
+                    break;
+                case "LIC":
+                    investObj.put("lic", ((investObj.has("lic") ? (double)investObj.get("lic") : 0) + exp.getPrice()));
+                    break;
+                case "PPF":
+                    investObj.put("ppf", ((investObj.has("ppf") ? (double)investObj.get("ppf") : 0) + exp.getPrice()));
+                    break;
+                default:
+                    System.out.println();
+                    break;
+            }
+        }
+
+        accountObj.put("budgetAmount", budgetPrice - expensePrice);
+        json.put("totalAccount", accountObj);
+        json.put("totalInvest", investObj);
+
+        return json;
+    }*/
+
+    public ArrayList calculateDataForSavingsReport() {
+        double expensePrice = 0;
+        double budgetPrice = 0;
+        List<Expense> expenseList = null;
+        expenseList = expenseRepository.fetchParentCategoryExpense("Savings");
+        List<Object[]> expenseTracker = expenseRepository.fetchSumByYearAndMonth();
+        List<Object[]> budgetTracker = budgetRepository.fetchSumByYearAndMonth();
+        Map<String, JSONObject> monthlyTotalsMap = new TreeMap<>(Collections.reverseOrder());
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        for (Expense expense : expenseList) {
+            String monthYear = CommonUtils.getMonthYear(expense.getDate());
+            if (!monthlyTotalsMap.containsKey(monthYear)) {
+                JSONObject json = new JSONObject();
+                json.put("month", monthYear).put("totalAccount", 0.0).put("totalInvest", 0.0).put("budgetAmount", 0.0);
+                monthlyTotalsMap.put(monthYear, json);
+            }
+            JSONObject monthlyTotal = monthlyTotalsMap.get(monthYear);
+
+            for (Object[] exx : expenseTracker) {
+
+                if (exx[0].toString().equalsIgnoreCase(monthYear)) {
+                    double budgetAmount = 0;
+                    for (Object[] bud : budgetTracker) {
+                        if (bud[0].toString().equalsIgnoreCase(monthYear)) {
+                            budgetAmount = (double)bud[1] - (double)exx[1];
+                            break;
+                        }
+                    }
+                    monthlyTotal.put("budgetAmount", budgetAmount);
+                    break;
+                }
+            }
+
+            if (expense.getCategory().equalsIgnoreCase("NRE") || expense.getCategory().equalsIgnoreCase("FRE")) {
+                double expObj = (double) monthlyTotal.get("totalAccount");
+                expObj = expObj + (double) expense.getPrice();
+                String formattedValue = df.format(expObj);
+                double result = Double.parseDouble(formattedValue);
+                monthlyTotal.put("totalAccount", result);
+            } else {
+                double expObj = (double) monthlyTotal.get("totalInvest");
+                expObj = expObj + (double) expense.getPrice();
+                String formattedValue = df.format(expObj);
+                double result = Double.parseDouble(formattedValue);
+                monthlyTotal.put("totalInvest", result);
+            }
+        }
+
+        return new ArrayList<>(monthlyTotalsMap.values());
     }
 }
