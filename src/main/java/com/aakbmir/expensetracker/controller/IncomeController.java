@@ -21,8 +21,7 @@ public class IncomeController {
 
     @PostMapping("/save-income")
     public ResponseEntity saveIncome(@RequestBody Income income) {
-        if (income != null && income.getName() != null && income.getDate() != null
-                && income.getNote() != null && income.getPrice() != 0) {
+        if (income != null && income.getName() != null) {
             Income cat = incomeService.saveIncome(income);
             return new ResponseEntity(cat, HttpStatus.OK);
         } else {
@@ -45,11 +44,13 @@ public class IncomeController {
         return new ResponseEntity(cat, HttpStatus.OK);
     }
 
+/*
     @GetMapping("/get-current-income")
     public ResponseEntity getCurrentIncome(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<Income> incomesForMonth = incomeService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
         return new ResponseEntity(incomesForMonth, HttpStatus.OK);
     }
+*/
 
     @GetMapping("/get-all-incomes")
     public ResponseEntity getAllIncome() {
@@ -70,9 +71,6 @@ public class IncomeController {
             Income cat = incomeObj.get();
             cat.setId(income.getId());
             cat.setName(income.getName());
-            cat.setPrice(income.getPrice());
-            cat.setDate(income.getDate());
-            cat.setNote(income.getNote());
             Income updateCat = incomeService.updateIncome(cat);
             return new ResponseEntity(updateCat, HttpStatus.OK);
         }

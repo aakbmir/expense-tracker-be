@@ -22,10 +22,4 @@ public class Income {
     private Long id;
 
     private String name;
-
-    private double price;
-
-    private Date date;
-
-    private String note;
 }

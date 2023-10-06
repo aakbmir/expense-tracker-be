@@ -1,6 +1,5 @@
 package com.aakbmir.expensetracker.service;
 
-import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Income;
 import com.aakbmir.expensetracker.repository.IncomeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +38,5 @@ public class IncomeService {
         return incomeRepository.findAllByOrderByNameAsc();
     }
 
-    public List<Income> findByMonthAndYear(int year, int month) {
-        return incomeRepository.findByMonthAndYear(year, month);
-    }
 }
 

@@ -66,12 +66,6 @@ public class ReportsController {
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 
-    @GetMapping("/category-report-details")
-    public ResponseEntity categoryReportDetails(@RequestParam(name = "category") String category, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<Expense> json = reportsService.fetchCategoryReportDetails(category, Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(json, HttpStatus.OK);
-    }
-
     @GetMapping("/super-category-report")
     public ResponseEntity superCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         JSONArray expensesForMonth = reportsService.calculateDataForSuperCategoryReport(Integer.valueOf(year), Integer.valueOf(month));
@@ -90,10 +84,16 @@ public class ReportsController {
         return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
     }
 
-    @GetMapping("/category-report")
+    @GetMapping("/grouped-report")
     public ResponseEntity getCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<ParentCategoryDTO> list = reportsService.calculateDataForCategoryReport(year, month);
         return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/category-report-details")
+    public ResponseEntity categoryReportDetails(@RequestParam(name = "category") String category, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        List<Expense> json = reportsService.fetchCategoryReportDetails(category, Integer.valueOf(year), Integer.valueOf(month));
+        return new ResponseEntity(json, HttpStatus.OK);
     }
 
     @GetMapping("/refresh-cache")
@@ -101,4 +101,6 @@ public class ReportsController {
         CommonUtils.categoryListCache.clear();
         return new ResponseEntity("success", HttpStatus.OK);
     }
+
+
 }
