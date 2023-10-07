@@ -3,7 +3,6 @@ package com.aakbmir.expensetracker.controller;
 import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.service.BudgetService;
-import com.aakbmir.expensetracker.service.CategoryService;
 import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/budget")
@@ -26,9 +24,9 @@ public class BudgetController {
     CommonUtils commonUtils;
 
     @GetMapping("/add-all-budgets")
-    public ResponseEntity addAllBudgets() {
+    public ResponseEntity<List<Budget>> addAllBudgets() {
         List<Budget> isAdded = budgetService.addAllBudgets();
-        return new ResponseEntity(isAdded, HttpStatus.OK);
+        return new ResponseEntity<>(isAdded, HttpStatus.OK);
     }
 
     @PostMapping("/save-budget")
@@ -52,14 +50,14 @@ public class BudgetController {
     }
 
     @GetMapping("/get-current-budget")
-    public ResponseEntity getCurrentBudget(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+    public ResponseEntity<List<Budget>> getCurrentBudget(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<Budget> budgetsForMonth = budgetService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(budgetsForMonth, HttpStatus.OK);
+        return new ResponseEntity<>(budgetsForMonth, HttpStatus.OK);
     }
 
     @PostMapping("/update-budget")
-    public ResponseEntity updateBudget(@RequestBody Budget budget) {
+    public ResponseEntity<Budget> updateBudget(@RequestBody Budget budget) {
         Budget updateCat = budgetService.updateBudget(budget);
-        return new ResponseEntity(updateCat, HttpStatus.OK);
+        return new ResponseEntity<>(updateCat, HttpStatus.OK);
     }
 }

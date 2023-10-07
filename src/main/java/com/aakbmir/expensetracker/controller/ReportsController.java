@@ -1,6 +1,7 @@
 package com.aakbmir.expensetracker.controller;
 
 import com.aakbmir.expensetracker.DTO.ParentCategoryDTO;
+import com.aakbmir.expensetracker.entity.Bank;
 import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.entity.MonthlyTotal;
 import com.aakbmir.expensetracker.service.ReportsService;
@@ -69,4 +70,11 @@ public class ReportsController {
         ArrayList<MonthlyTotal> savingsReportDTO = reportsService.calculateDataForSavingsReport();
         return new ResponseEntity(savingsReportDTO.toString(), HttpStatus.OK);
     }
+
+    @GetMapping("/bank-report")
+    public ResponseEntity getCategoryReport() {
+        ArrayList list = reportsService.calculateDataForBankReport();
+        return new ResponseEntity(list.toString(), HttpStatus.OK);
+    }
+
 }
