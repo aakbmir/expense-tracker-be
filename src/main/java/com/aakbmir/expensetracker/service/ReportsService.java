@@ -7,10 +7,7 @@ import com.aakbmir.expensetracker.entity.Bank;
 import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.entity.Expense;
-import com.aakbmir.expensetracker.repository.BankRepository;
-import com.aakbmir.expensetracker.repository.BudgetRepository;
-import com.aakbmir.expensetracker.repository.ExpenseRepository;
-import com.aakbmir.expensetracker.repository.ReportsRepository;
+import com.aakbmir.expensetracker.repository.*;
 import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,6 +29,9 @@ public class ReportsService {
 
     @Autowired
     ExpenseRepository expenseRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Autowired
     BankRepository bankRepository;
@@ -447,13 +447,13 @@ public class ReportsService {
             JSONObject monthlyTotal = monthlyTotalsMap.get(monthYear);
 
             String formattedValue = null;
-            if(bankRecordObj.getName().equalsIgnoreCase("HDFC")) {
+            if (bankRecordObj.getName().equalsIgnoreCase("HDFC")) {
                 hdfcObj = hdfcObj + (double) bankRecordObj.getPrice();
                 formattedValue = df.format(hdfcObj);
-            } else if(bankRecordObj.getName().equalsIgnoreCase("ENBD")) {
+            } else if (bankRecordObj.getName().equalsIgnoreCase("ENBD")) {
                 nbdObj = nbdObj + (double) bankRecordObj.getPrice();
                 formattedValue = df.format(nbdObj);
-            } else if(bankRecordObj.getName().equalsIgnoreCase("Mashreq")) {
+            } else if (bankRecordObj.getName().equalsIgnoreCase("Mashreq")) {
                 mshObj = mshObj + (double) bankRecordObj.getPrice();
                 formattedValue = df.format(mshObj);
             }
@@ -464,5 +464,25 @@ public class ReportsService {
 
         }
         return new ArrayList<>(monthlyTotalsMap.values());
+    }
+
+    public List<Category> getDistinctCategories() {
+        return categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
+    }
+
+    public List<Expense> findByCategory(String expense, String option) {
+        if (option.equalsIgnoreCase("Category")) {
+            if (expense == null || expense.equalsIgnoreCase("")) {
+                return expenseRepository.findAllByCategory();
+            } else {
+                return expenseRepository.findCategory(expense);
+            }
+        } else if (option.equalsIgnoreCase("Super")) {
+            return expenseRepository.findSuperCategory(expense);
+        } else if (option.equalsIgnoreCase("Parent")) {
+            return expenseRepository.findParentCategory(expense);
+        } else {
+            return expenseRepository.findAllByCategory();
+        }
     }
 }

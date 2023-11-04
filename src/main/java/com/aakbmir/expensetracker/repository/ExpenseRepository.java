@@ -14,6 +14,12 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e where e.category=:category order by date desc")
     List<Expense> findCategory(String category);
 
+    @Query("SELECT e FROM Expense e where e.superCategory=:superCategory order by date desc")
+    List<Expense> findSuperCategory(String superCategory);
+
+    @Query("SELECT e FROM Expense e where e.parentCategory=:parentCategory order by date desc")
+    List<Expense> findParentCategory(String parentCategory);
+
     List<Expense> findAllByOrderByDateAsc();
 
     @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")

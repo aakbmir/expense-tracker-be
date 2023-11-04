@@ -13,4 +13,7 @@ public interface ReportsRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT i FROM Expense i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month and i.superCategory=:superCategory order by date desc")
     List<Expense> findSuperCategoryByMonthAndYear(int year, int month, String superCategory);
+
+    @Query("SELECT DISTINCT e.category FROM Category e order by e.category asc")
+    List<String> findDistinctCategoriesValue();
 }
