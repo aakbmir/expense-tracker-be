@@ -19,7 +19,6 @@ public class CategoryService {
 
     public Category saveCategory(Category category) {
         Category cat = categoryRepository.save(category);
-        CommonUtils.categoryListCache.clear();
         return cat;
     }
 
@@ -29,7 +28,6 @@ public class CategoryService {
 
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
-        CommonUtils.categoryListCache.clear();
     }
 
     public List<Category> getAllCategories() {

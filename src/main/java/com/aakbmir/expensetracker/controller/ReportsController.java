@@ -62,7 +62,6 @@ public class ReportsController {
 
     @GetMapping("/refresh-cache")
     public ResponseEntity refreshCache() {
-        CommonUtils.categoryListCache.clear();
         return new ResponseEntity("success", HttpStatus.OK);
     }
 
