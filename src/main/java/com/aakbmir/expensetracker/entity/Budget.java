@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @Getter
 @Setter
-@Table(name = "budget_allocation")
+@Table(name = "budget")
 public class Budget {
 
     @Id

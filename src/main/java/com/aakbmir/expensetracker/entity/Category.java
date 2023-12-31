@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-@Table(name = "category_allotment")
+@Table(name = "category")
 public class Category implements Comparable<Category> {
 
     @Id
