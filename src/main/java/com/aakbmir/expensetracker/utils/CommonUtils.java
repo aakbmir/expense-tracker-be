@@ -43,12 +43,12 @@ public class CommonUtils {
     }
 
     public Category fetchCategoryByID(Long id) {
-        List<Category> categoryList = categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();;
+        List<Category> categoryList = categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
         return categoryList.stream().filter(item -> item.getId() == id).collect(Collectors.toList()).get(0);
     }
 
     public static String getMonthYear(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM-yyyy");
         return sdf.format(date);
     }
 }

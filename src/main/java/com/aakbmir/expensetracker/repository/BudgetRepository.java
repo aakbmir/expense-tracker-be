@@ -13,7 +13,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     List<Budget> findAllByOrderByDateAsc();
 
-    @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month order by b.category asc")
+    @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month order by b.parentCategory, superCategory, category asc")
     List<Budget> findByMonthAndYear(int year, int month);
 
     @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year order by b.category asc")
