@@ -48,7 +48,7 @@ public class CommonUtils {
     }
 
     public static String getMonthYear(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
         return sdf.format(date);
     }
 }

@@ -112,9 +112,14 @@ public class ReportsService {
                 json.put("expense", 0.0);
             }
 
-            String formattedValue = df.format((double) json.get("budget") - (double) json.get("expense"));
-            double result = Double.parseDouble(formattedValue);
-            json.put("deviate", result);
+            if(json.has("budget") && json.has("expense")) {
+                String formattedValue = df.format((double) json.get("budget") - (double) json.get("expense"));
+                double result = Double.parseDouble(formattedValue);
+                json.put("deviate", result);
+            }else {
+                json.put("deviate", 0);
+                json.put("budget", 0);
+            }
             jsonArray.put(json);
         }
         return jsonArray;
