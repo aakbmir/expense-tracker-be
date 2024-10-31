@@ -16,6 +16,12 @@ import java.util.Optional;
 @CrossOrigin("*")
 public class ExpenseController {
 
+    @GetMapping("/get-status")
+    public ResponseEntity getStatus() {
+        System.out.println("Server is running");
+        return new ResponseEntity("server is running", HttpStatus.OK);
+    }
+
     @Autowired
     ExpenseService expenseService;
 
