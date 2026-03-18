@@ -11,8 +11,8 @@ public class TestController {
     @Autowired
     ExpenseController expenseController;
 
-    @Scheduled(fixedRate = 10000)
+/*    @Scheduled(fixedRate = 10000)
     public void reportCurrentTime() {
         expenseController.getStatus();
-    }
+    }*/
 }
