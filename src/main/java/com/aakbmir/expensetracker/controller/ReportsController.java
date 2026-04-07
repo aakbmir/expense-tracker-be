@@ -1,12 +1,10 @@
 package com.aakbmir.expensetracker.controller;
 
 import com.aakbmir.expensetracker.DTO.ParentCategoryDTO;
-import com.aakbmir.expensetracker.entity.Bank;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.entity.Expense;
 import com.aakbmir.expensetracker.entity.MonthlyTotal;
 import com.aakbmir.expensetracker.service.ReportsService;
-import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

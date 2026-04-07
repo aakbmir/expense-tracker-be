@@ -15,7 +15,7 @@ public class ParentCategoryDTO {
 
     private String name;
 
-    private List<SuperCategoryDTO> superCategoryDtoList;
+    private List<SuperCategoryDTO> subCategoryDtoList;
 
     private String completed;
 

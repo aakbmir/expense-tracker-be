@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -39,16 +40,16 @@ public class CommonUtils {
     }
 
     public List<Category> fetchAllCategories() {
-        return categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
+        return categoryRepository.findAllByOrderByCategoryAsc();
     }
 
     public Category fetchCategoryByID(Long id) {
-        List<Category> categoryList = categoryRepository.findAllByOrderByParentCategoryAscSuperCategoryAscCategoryAsc();
+        List<Category> categoryList = categoryRepository.findAllByOrderByMainCategoryAscSubCategoryAscCategoryAsc();
         return categoryList.stream().filter(item -> item.getId() == id).collect(Collectors.toList()).get(0);
     }
 
-    public static String getMonthYear(Date date) {
+    public static String getMonthYear(Instant date) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
-        return sdf.format(date);
+        return sdf.format(Date.from(date)); // convert here
     }
 }

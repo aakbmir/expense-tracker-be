@@ -3,6 +3,7 @@ package com.aakbmir.expensetracker.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.Date;
 
 
@@ -13,7 +14,7 @@ import java.util.Date;
 @Builder
 @Getter
 @Setter
-@Table(name = "budget")
+@Table(name = "budget_master")
 public class Budget {
 
     @Id
@@ -22,12 +23,14 @@ public class Budget {
 
     private String category;
 
-    private String parentCategory;
+    private String mainCategory;
 
-    private String superCategory;
+    private String subCategory;
+
+    private String categoryGroup;
 
     private double price;
 
-    private Date date;
+    private Instant date;
 
 }

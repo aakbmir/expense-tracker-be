@@ -6,14 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "income")
+@Table(name = "income_master")
 public class Income {
 
     @Id
@@ -24,7 +24,7 @@ public class Income {
 
     private double price;
 
-    private Date date;
+    private Instant date;
 
     private String note;
 }

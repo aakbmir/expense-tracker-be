@@ -6,14 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "expense")
+@Table(name = "expense_master")
 public class Expense {
 
     @Id
@@ -22,13 +22,15 @@ public class Expense {
 
     private String category;
 
-    private String parentCategory;
+    private String mainCategory;
 
-    private String superCategory;
+    private String subCategory;
+
+    private String categoryGroup;
 
     private double price;
 
-    private Date date;
+    private Instant date;
 
     private String note;
 

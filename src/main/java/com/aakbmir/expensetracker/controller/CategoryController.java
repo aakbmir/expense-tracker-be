@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -26,10 +27,10 @@ public class CategoryController {
 
     @PostMapping("/save-category")
     public ResponseEntity saveCategory(@RequestBody Category category) {
-        if (category != null && category.getCategory() != null && category.getParentCategory() != null && category.getSuperCategory() != null) {
+        if (category != null && category.getCategory() != null && category.getMainCategory() != null && category.getSubCategory() != null) {
             category.setCategory(category.getCategory());
-            category.setSuperCategory(category.getSuperCategory());
-            category.setParentCategory(category.getParentCategory());
+            category.setSubCategory(category.getSubCategory());
+            category.setMainCategory(category.getMainCategory());
             Category cat = categoryService.saveCategory(category);
             saveBudget(cat);
             return new ResponseEntity(cat, HttpStatus.OK);
@@ -42,9 +43,9 @@ public class CategoryController {
     private void saveBudget(Category cat) {
         Budget budget = new Budget();
         budget.setCategory(cat.getCategory());
-        budget.setParentCategory(cat.getParentCategory());
-        budget.setSuperCategory(cat.getSuperCategory());
-        budget.setDate(new Date());
+        budget.setMainCategory(cat.getMainCategory());
+        budget.setSubCategory(cat.getSubCategory());
+        budget.setDate(Instant.now());
         budgetService.saveBudget(budget);
     }
 
@@ -53,9 +54,9 @@ public class CategoryController {
         budget.setId(budgetObj.getId());
         budget.setPrice(budgetObj.getPrice());
         budget.setCategory(category.getCategory());
-        budget.setParentCategory(category.getParentCategory());
-        budget.setSuperCategory(category.getSuperCategory());
-        budget.setDate(new Date());
+        budget.setMainCategory(category.getMainCategory());
+        budget.setSubCategory(category.getSubCategory());
+        budget.setDate(Instant.now());
         budgetService.saveBudget(budget);
     }
 
@@ -87,9 +88,9 @@ public class CategoryController {
         Category cat = categoryService.findById(category.getId());
         if (cat != null) {
             Budget budgetObj = budgetService.findByBudget(cat.getCategory());
-            cat.setSuperCategory(category.getSuperCategory());
+            cat.setSubCategory(category.getSubCategory());
             cat.setCategory(category.getCategory());
-            cat.setParentCategory(category.getParentCategory());
+            cat.setMainCategory(category.getMainCategory());
             Category updateCat = categoryService.saveCategory(cat);
             updateBudget(budgetObj, category);
             return new ResponseEntity(updateCat, HttpStatus.OK);

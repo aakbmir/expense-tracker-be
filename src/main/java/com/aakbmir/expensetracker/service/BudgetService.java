@@ -7,6 +7,7 @@ import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,10 +29,10 @@ public class BudgetService {
         for (Category cat : categoryList) {
             Budget budgetObj = new Budget();
             budgetObj.setPrice(0);
-            budgetObj.setDate(new Date());
+            budgetObj.setDate(Instant.now());
             budgetObj.setCategory(cat.getCategory());
-            budgetObj.setSuperCategory(cat.getSuperCategory());
-            budgetObj.setParentCategory(cat.getParentCategory());
+            budgetObj.setSubCategory(cat.getSubCategory());
+            budgetObj.setMainCategory(cat.getMainCategory());
             budgetList.add(budgetObj);
         }
         budgetList = budgetRepository.saveAll(budgetList);

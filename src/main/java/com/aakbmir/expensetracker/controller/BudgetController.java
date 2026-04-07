@@ -39,8 +39,8 @@ public class BudgetController {
                     break;
                 }
             }
-            budget.setParentCategory(category.getParentCategory());
-            budget.setSuperCategory(category.getSuperCategory());
+            budget.setMainCategory(category.getMainCategory());
+            budget.setSubCategory(category.getSubCategory());
             Budget cat = budgetService.saveBudget(budget);
             return new ResponseEntity<>(cat, HttpStatus.OK);
         } else {

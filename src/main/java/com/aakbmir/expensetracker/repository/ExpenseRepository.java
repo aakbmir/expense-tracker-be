@@ -14,11 +14,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e where e.category=:category order by date desc")
     List<Expense> findCategory(String category);
 
-    @Query("SELECT e FROM Expense e where e.superCategory=:superCategory order by date desc")
-    List<Expense> findSuperCategory(String superCategory);
+    @Query("SELECT e FROM Expense e where e.subCategory=:subCategory order by date desc")
+    List<Expense> findSubCategory(String subCategory);
 
-    @Query("SELECT e FROM Expense e where e.parentCategory=:parentCategory order by date desc")
-    List<Expense> findParentCategory(String parentCategory);
+    @Query("SELECT e FROM Expense e where e.mainCategory=:mainCategory order by date desc")
+    List<Expense> findMainCategory(String mainCategory);
 
     List<Expense> findAllByOrderByDateAsc();
 
@@ -28,8 +28,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year order by date desc")
     List<Expense> findByYear(int year);
 
-    @Query("SELECT e FROM Expense e WHERE e.parentCategory=:parentCategory and category != 'Stocks' order by e.date desc")
-    List<Expense> fetchParentCategoryExpense(String parentCategory);
+    @Query("SELECT e FROM Expense e WHERE e.mainCategory=:mainCategory and category != 'Stocks' order by e.date desc")
+    List<Expense> fetchMainCategoryExpense(String mainCategory);
 
     @Query("SELECT sum(price) FROM Expense e WHERE YEAR(e.date) = :year")
     double fetchSumByYear(int year);

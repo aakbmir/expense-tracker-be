@@ -3,6 +3,7 @@ package com.aakbmir.expensetracker.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -12,7 +13,7 @@ import java.util.Date;
 @Builder
 @Getter
 @Setter
-@Table(name = "bank_bal")
+@Table(name = "bank_bal_master")
 public class Bank {
 
     @Id
@@ -21,7 +22,7 @@ public class Bank {
 
     private String name;
 
-    private Date date;
+    private Instant date;
 
     private double price;
 }

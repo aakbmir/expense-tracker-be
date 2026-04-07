@@ -10,19 +10,21 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-@Table(name = "category")
+@Table(name = "category_master")
 public class Category implements Comparable<Category> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String parentCategory;
+    private String mainCategory;
 
-    private String superCategory;
+    private String subCategory;
 
     @Column(unique = true)
     private String category;
+
+    private String categoryGroup;
 
     @Override
     public int compareTo(Category d) {

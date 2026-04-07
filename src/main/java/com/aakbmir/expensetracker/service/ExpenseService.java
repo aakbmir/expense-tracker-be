@@ -27,8 +27,8 @@ public class ExpenseService {
                 break;
             }
         }
-        expense.setParentCategory(category.getParentCategory());
-        expense.setSuperCategory(category.getSuperCategory());
+        expense.setMainCategory(category.getMainCategory());
+        expense.setSubCategory(category.getSubCategory());
         return expenseRepository.save(expense);
     }
 

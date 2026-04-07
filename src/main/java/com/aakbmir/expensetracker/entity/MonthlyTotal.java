@@ -8,6 +8,7 @@ public class MonthlyTotal implements Comparable<MonthlyTotal> {
 
     public MonthlyTotal() {
     }
+
     public MonthlyTotal(String monthYear, double totalExpense, double totalBudget) {
         this.monthYear = monthYear;
         this.totalExpense = totalExpense;
