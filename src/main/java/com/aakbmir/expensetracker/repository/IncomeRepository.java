@@ -23,7 +23,7 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
 
     @Query("SELECT e FROM Income e WHERE YEAR(e.date) = :year order by date desc")
     List<Income> findByYear(int year);
-    
+
     @Query("SELECT sum(price) FROM Income e WHERE YEAR(e.date) = :year")
     double fetchSumByYear(int year);
 

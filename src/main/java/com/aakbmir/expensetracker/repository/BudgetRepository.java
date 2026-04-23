@@ -1,8 +1,6 @@
 package com.aakbmir.expensetracker.repository;
 
 import com.aakbmir.expensetracker.entity.Budget;
-import com.aakbmir.expensetracker.entity.Budget;
-import com.aakbmir.expensetracker.entity.Expense;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

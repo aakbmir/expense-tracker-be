@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Service
 public class ExpenseService {
-    
+
     @Autowired
     ExpenseRepository expenseRepository;
 
@@ -33,7 +33,7 @@ public class ExpenseService {
     }
 
     public List<Expense> findByCategory(String expense) {
-        if(expense == null || expense.equalsIgnoreCase("")) {
+        if (expense == null || expense.equalsIgnoreCase("")) {
             return expenseRepository.findAllByCategory();
         } else {
             return expenseRepository.findCategory(expense);

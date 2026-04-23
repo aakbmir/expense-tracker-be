@@ -23,7 +23,7 @@ public class BankService {
     }
 
     public List<Bank> findByName(String bankRecord) {
-        if(bankRecord == null || bankRecord.equalsIgnoreCase("")) {
+        if (bankRecord == null || bankRecord.equalsIgnoreCase("")) {
             return bankRepository.findAll();
         } else {
             return bankRepository.findByName(bankRecord);
