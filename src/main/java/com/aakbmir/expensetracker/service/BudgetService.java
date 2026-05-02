@@ -30,6 +30,7 @@ public class BudgetService {
             budgetObj.setCategory(cat.getCategory());
             budgetObj.setSubCategory(cat.getSubCategory());
             budgetObj.setMainCategory(cat.getMainCategory());
+            budgetObj.setCategoryGroup(cat.getCategoryGroup());
             budgetList.add(budgetObj);
         }
         budgetList = budgetRepository.saveAll(budgetList);
