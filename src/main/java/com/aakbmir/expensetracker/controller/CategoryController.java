@@ -1,5 +1,6 @@
 package com.aakbmir.expensetracker.controller;
 
+import com.aakbmir.expensetracker.DTO.CategoryMasterDTO;
 import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.service.BudgetService;
@@ -55,7 +56,9 @@ public class CategoryController {
         budget.setCategory(category.getCategory());
         budget.setMainCategory(category.getMainCategory());
         budget.setSubCategory(category.getSubCategory());
-        budget.setDate(Instant.now());
+        budget.setCategoryGroup(budgetObj.getCategoryGroup());
+        budget.setDate(budgetObj.getDate());
+        //budget.setDate(Instant.now());
         budgetService.saveBudget(budget);
     }
 
@@ -75,24 +78,28 @@ public class CategoryController {
 
     @DeleteMapping("/del-category/{id}")
     private void deleteCategory(@PathVariable("id") Long id) {
-        Category categoryObj = categoryService.findById(id);
-        String categoryName = categoryObj.getCategory();
+//        Category categoryObj = categoryService.findById(id);
+//        String categoryName = categoryObj.getCategory();
         categoryService.deleteCategory(id);
-        Budget budgetObj = budgetService.findByBudget(categoryName);
-        budgetService.deleteBudget(budgetObj.getId());
+//        LtsBudget budgetObj = budgetService.findByBudget(categoryName);
+//        budgetService.deleteBudget(budgetObj.getId());
     }
 
     @PostMapping("/update-category")
-    public ResponseEntity updateCategory(@RequestBody Category category) {
+    public ResponseEntity updateCategory(@RequestBody CategoryMasterDTO category) {
+
+
         Category cat = categoryService.findById(category.getId());
         if (cat != null) {
-            Budget budgetObj = budgetService.findByBudget(cat.getCategory());
-            cat.setSubCategory(category.getSubCategory());
-            cat.setCategory(category.getCategory());
-            cat.setMainCategory(category.getMainCategory());
-            Category updateCat = categoryService.saveCategory(cat);
-            updateBudget(budgetObj, category);
-            return new ResponseEntity(updateCat, HttpStatus.OK);
+            List<Budget> budgetList = budgetService.findByBudget(category.getOldCategory());
+            for (Budget budget : budgetList) {
+                cat.setSubCategory(category.getSubCategory());
+                cat.setCategory(category.getCategory());
+                cat.setMainCategory(category.getMainCategory());
+                categoryService.saveCategory(cat);
+                updateBudget(budget, cat);
+            }
+            return new ResponseEntity(null, HttpStatus.OK);
         }
         return new ResponseEntity(category, HttpStatus.OK);
     }

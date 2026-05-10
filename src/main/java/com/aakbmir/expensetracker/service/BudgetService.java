@@ -41,7 +41,7 @@ public class BudgetService {
         return budgetRepository.save(budget);
     }
 
-    public Budget findByBudget(String category) {
+    public List<Budget> findByBudget(String category) {
         return budgetRepository.findByCategory(category);
     }
 
