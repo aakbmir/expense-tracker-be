@@ -2,6 +2,7 @@ package com.aakbmir.expensetracker.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +35,7 @@ public class Budget {
     @NotNull
     private String categoryGroup;
 
+    @Positive
     private BigDecimal price;
 
     @NotNull

@@ -16,4 +16,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT c FROM Category c WHERE YEAR(c.date) = :year AND MONTH(c.date) = :month order by c.mainCategory, subCategory, category asc")
     List<Category> findAllByOrderByCategoryAsc(int year, int month);
+
+    @Query("SELECT c FROM Category c order by c.mainCategory, subCategory, category asc")
+    List<Category> findAllByOrderByCategoryAsc();
 }

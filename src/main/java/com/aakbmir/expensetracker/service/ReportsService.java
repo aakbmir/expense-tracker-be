@@ -262,7 +262,7 @@ public class ReportsService {
     }
 
     public List<ParentCategoryDTO> calculateDataForCategoryReport(String requestedYear, String requestedMonth) {
-        List<Category> categoryList = commonUtils.fetchAllCategories(0,0);
+        List<Category> categoryList = commonUtils.fetchAllCategories(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
         Collections.sort(categoryList);
 
         List<Budget> budgetList;
@@ -288,7 +288,7 @@ public class ReportsService {
             for (String distinctSuperCatObj : distinctSuperCatList) {
                 SuperCategoryDTO superCategoryDTO = new SuperCategoryDTO();
                 superCategoryDTO.setName(distinctSuperCatObj);
-                List<Category> filteredCategoryList = categoryList.stream().filter(item -> item.getSubCategory().equalsIgnoreCase(distinctSuperCatObj)).collect(Collectors.toList());
+                List<Category> filteredCategoryList = categoryList.stream().filter(item -> item.getSubCategory().equalsIgnoreCase(distinctSuperCatObj)).toList();
                 List<CategoryDTO> catDtoList = new ArrayList<>();
                 double superCatBudget = 0;
                 double superCatExpense = 0;
@@ -296,7 +296,7 @@ public class ReportsService {
                     CategoryDTO categoryDTO = new CategoryDTO();
                     categoryDTO.setName(distinctCatObj.getCategory());
                     categoryDTO.setCompleted(calculateExpenseValue(distinctCatObj.getCategory(), expenseList).get("completed").toString());
-                    categoryDTO.setExpense(Double.valueOf(calculateExpenseValue(distinctCatObj.getCategory(), expenseList).get("expense").toString()));
+                    categoryDTO.setExpense(Double.parseDouble(calculateExpenseValue(distinctCatObj.getCategory(), expenseList).get("expense").toString()));
                     superCatExpense = superCatExpense + categoryDTO.getExpense();
                     categoryDTO.setBudget(calculateBudgetValue(distinctCatObj.getCategory(), budgetList));
                     superCatBudget = superCatBudget + categoryDTO.getBudget();
@@ -307,8 +307,8 @@ public class ReportsService {
                 superCategoryDTO.setExpense(superCatExpense);
                 parentCatBudget = parentCatBudget + superCategoryDTO.getBudget();
                 parentCatExpense = parentCatExpense + superCategoryDTO.getExpense();
-                List<String> completedList = catDtoList.stream().map(CategoryDTO::getCompleted).distinct().collect(Collectors.toList());
-                if (!completedList.isEmpty() && completedList.size() == 1) {
+                List<String> completedList = catDtoList.stream().map(CategoryDTO::getCompleted).distinct().toList();
+                if (completedList.size() == 1) {
                     superCategoryDTO.setCompleted(completedList.get(0));
                 } else {
                     superCategoryDTO.setCompleted("Partial");
@@ -318,8 +318,8 @@ public class ReportsService {
             parentCategoryDTO.setBudget(parentCatBudget);
             parentCategoryDTO.setExpense(parentCatExpense);
             parentCategoryDTO.setSubCategoryDtoList(superCatDtoList);
-            List<String> completedList = superCatDtoList.stream().map(SuperCategoryDTO::getCompleted).distinct().collect(Collectors.toList());
-            if (!completedList.isEmpty() && completedList.size() == 1) {
+            List<String> completedList = superCatDtoList.stream().map(SuperCategoryDTO::getCompleted).distinct().toList();
+            if (completedList.size() == 1) {
                 parentCategoryDTO.setCompleted(completedList.get(0));
             } else {
                 parentCategoryDTO.setCompleted("Partial");
@@ -331,29 +331,21 @@ public class ReportsService {
     }
 
     private List<String> fetchDistinctSuperCategories(String parentCategoryObj, List<Category> categoryList) {
-        List<String> distinctSuperCat = categoryList.stream()
+        return categoryList.stream()
                 .filter(row -> parentCategoryObj.equalsIgnoreCase(row.getMainCategory()))
                 .map(Category::getSubCategory)
                 .distinct()
                 .collect(Collectors.toList());
-        return distinctSuperCat;
     }
 
     private JSONObject calculateExpenseValue(String category, List<Expense> expenseList) {
         JSONObject json = new JSONObject();
-        List<Expense> expenseFilteredList = expenseList.stream().filter(item -> item.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
+        List<Expense> expenseFilteredList = expenseList.stream().filter(item -> item.getCategory().equalsIgnoreCase(category)).toList();
         if (!expenseFilteredList.isEmpty()) {
             double sum = expenseFilteredList.stream()
                     .mapToDouble(expense -> Double.parseDouble(String.valueOf(expense.getPrice())))
                     .sum();
             json.put("expense", sum);
-            String result = "Partial";
-            List<String> completedList = expenseFilteredList.stream().map(Expense::getCompleted).distinct().collect(Collectors.toList());
-            if (!completedList.isEmpty() && completedList.size() == 1) {
-                json.put("completed", completedList.get(0).equalsIgnoreCase("No") ? "Partial" : "Yes");
-            } else {
-                json.put("completed", "Partial");
-            }
         } else {
             json.put("expense", 0);
             json.put("completed", "No");
@@ -362,50 +354,16 @@ public class ReportsService {
     }
 
     private double calculateBudgetValue(String category, List<Budget> budgetList) {
-        double sum = 0;
-        List<Budget> expenseFilteredList = budgetList.stream().filter(item -> item.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
+        double sum;
+        List<Budget> expenseFilteredList = budgetList.stream().filter(item -> item.getCategory().equalsIgnoreCase(category)).toList();
         sum = expenseFilteredList.stream()
                 .mapToDouble(budget -> Double.parseDouble(String.valueOf(budget.getPrice())))
                 .sum();
         return sum;
     }
 
-/*    public JSONObject calculateDataForSavingsReport(String requestedYear, String requestedMonth) {
-        JSONObject accountObj = new JSONObject();
-        JSONObject investObj = new JSONObject();
-        JSONObject json = new JSONObject();
-
-        for (Expense exp : expenseList) {
-            switch (exp.getCategory()) {
-                case "FRE":
-                    accountObj.put("fre", ((accountObj.has("fre") ? (double)accountObj.get("fre") : 0) + exp.getPrice()));
-                    break;
-                case "NRE":
-                    accountObj.put("nre", ((accountObj.has("nre") ? (double)accountObj.get("nre") : 0) + exp.getPrice()));
-                    break;
-                case "LIC":
-                    investObj.put("lic", ((investObj.has("lic") ? (double)investObj.get("lic") : 0) + exp.getPrice()));
-                    break;
-                case "PPF":
-                    investObj.put("ppf", ((investObj.has("ppf") ? (double)investObj.get("ppf") : 0) + exp.getPrice()));
-                    break;
-                default:
-                    System.out.println();
-                    break;
-            }
-        }
-
-        accountObj.put("budgetAmount", budgetPrice - expensePrice);
-        json.put("totalAccount", accountObj);
-        json.put("totalInvest", investObj);
-
-        return json;
-    }*/
-
     public ArrayList<?> calculateDataForSavingsReport() {
-        double expensePrice = 0;
-        double budgetPrice = 0;
-        List<Expense> expenseList = null;
+        List<Expense> expenseList;
         expenseList = expenseRepository.fetchMainCategoryExpense("Savings");
         List<Object[]> expenseTracker = expenseRepository.fetchSumByYearAndMonth();
         List<Object[]> budgetTracker = budgetRepository.fetchSumByYearAndMonth();

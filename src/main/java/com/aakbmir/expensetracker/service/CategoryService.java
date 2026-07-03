@@ -46,7 +46,7 @@ public class CategoryService {
         return commonUtils.fetchCategoryByID(id);
     }
 
-    public void deleteCategory(Long id, int year, int month) {
+    public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
 

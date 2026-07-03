@@ -80,8 +80,8 @@ public class CategoryController {
     }
 
     @DeleteMapping("/del-category/{id}")
-    public void deleteCategory(@NotNull @PathVariable("id") Long id, int year, int month) {
-        categoryService.deleteCategory(id, year, month);
+    public void deleteCategory(@NotNull @PathVariable("id") Long id) {
+        categoryService.deleteCategory(id);
     }
 
     @PostMapping("/update-category")

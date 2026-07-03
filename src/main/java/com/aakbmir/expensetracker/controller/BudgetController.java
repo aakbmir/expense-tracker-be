@@ -30,24 +30,6 @@ public class BudgetController {
         return new ResponseEntity<>(isAdded, HttpStatus.OK);
     }
 
-    @PostMapping("/save-budget")
-    public ResponseEntity<Object> saveBudget(@Valid @NotNull @RequestBody Budget budget) {
-
-        Category category = null;
-        for (Category cat : commonUtils.fetchAllCategories(0,0)) {
-            if (budget.getCategory().equalsIgnoreCase(cat.getCategory())) {
-                category = cat;
-                break;
-            }
-        }
-        assert category != null;
-        budget.setMainCategory(category.getMainCategory());
-        budget.setSubCategory(category.getSubCategory());
-        Budget cat = budgetService.saveBudget(budget);
-        return new ResponseEntity<>(cat, HttpStatus.OK);
-
-    }
-
     @GetMapping("/get-current-budget")
     public ResponseEntity<List<Budget>> getCurrentBudget(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<Budget> budgetsForMonth = budgetService.findByMonthAndYear(Integer.parseInt(year), Integer.parseInt(month));

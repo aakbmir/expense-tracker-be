@@ -34,6 +34,10 @@ public class CommonUtils {
         return categoryRepository.findAllByOrderByCategoryAsc(year, month);
     }
 
+    public List<Category> fetchAllCategories() {
+        return categoryRepository.findAllByOrderByCategoryAsc();
+    }
+
     public Category fetchCategoryByID(Long id) {
         List<Category> categoryList = categoryRepository.findAllByOrderByMainCategoryAscSubCategoryAscCategoryAsc();
         return categoryList.stream().filter(item -> Objects.equals(item.getId(), id)).toList().get(0);

@@ -7,6 +7,8 @@ import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +23,12 @@ public class ExpenseService {
 
     public Expense saveExpense(Expense expense) {
         Category category = null;
-        for (Category cat : commonUtils.fetchAllCategories(0, 0)) {
+
+        ZonedDateTime zdt = expense.getDate().atZone(ZoneId.systemDefault());
+        int month = zdt.getMonthValue();
+        int year = zdt.getYear();
+
+        for (Category cat : commonUtils.fetchAllCategories(year, month)) {
             if (expense.getCategory().equalsIgnoreCase(cat.getCategory())) {
                 category = cat;
                 break;

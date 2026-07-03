@@ -34,6 +34,4 @@ public class Expense {
     private Instant date;
 
     private String note;
-
-    private String completed;
 }

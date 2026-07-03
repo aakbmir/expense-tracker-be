@@ -63,7 +63,6 @@ public class ExpenseController {
             expenseObj.setId(expense.getId());
             expenseObj.setCategory(expense.getCategory());
             expenseObj.setPrice(expense.getPrice());
-            expenseObj.setCompleted(expense.getCompleted());
             expenseObj.setDate(expense.getDate());
             expenseObj.setNote(expense.getNote());
             Expense updateCat = expenseService.saveExpense(expenseObj);
