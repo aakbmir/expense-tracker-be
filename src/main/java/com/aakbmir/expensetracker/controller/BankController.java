@@ -20,26 +20,26 @@ public class BankController {
     BankService bankService;
 
     @PostMapping("/save-bank-record")
-    public ResponseEntity saveBank(@RequestBody Bank bank) {
+    public ResponseEntity<?> saveBank(@RequestBody Bank bank) {
         if (bank != null && bank.getDate() != null && bank.getName() != null) {
             Bank bankObj = bankService.saveBankRecord(bank);
-            return new ResponseEntity(bankObj, HttpStatus.OK);
+            return new ResponseEntity<>(bankObj, HttpStatus.OK);
         } else {
             JSONObject json = new JSONObject().put("message", "invalid Request");
-            return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/get-bank-record")
-    private ResponseEntity getBank(@RequestParam(name = "bankName") String bankName) {
+    private ResponseEntity<?> getBank(@RequestParam(name = "bankName") String bankName) {
         List<Bank> bank = bankService.findByName(bankName);
-        return new ResponseEntity(bank, HttpStatus.OK);
+        return new ResponseEntity<>(bank, HttpStatus.OK);
     }
 
     @GetMapping("/get-current-bank-record")
-    public ResponseEntity getCurrentBank(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<Bank> banksForMonth = bankService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(banksForMonth, HttpStatus.OK);
+    public ResponseEntity<?> getCurrentBank(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        List<Bank> banksForMonth = bankService.findByMonthAndYear(Integer.parseInt(year), Integer.parseInt(month));
+        return new ResponseEntity<>(banksForMonth, HttpStatus.OK);
     }
 
     @DeleteMapping("/del-bank-record/{id}")
@@ -48,7 +48,7 @@ public class BankController {
     }
 
     @PostMapping("/update-bank-record")
-    public ResponseEntity updateBank(@RequestBody Bank bank) {
+    public ResponseEntity<?> updateBank(@RequestBody Bank bank) {
         Optional<Bank> bankData = bankService.findById(bank.getId());
         if (bankData.isPresent()) {
             Bank bankObj = bankData.get();
@@ -56,8 +56,8 @@ public class BankController {
             bankObj.setPrice(bank.getPrice());
             bankObj.setDate(bank.getDate());
             Bank updateCat = bankService.saveBankRecord(bankObj);
-            return new ResponseEntity(updateCat, HttpStatus.OK);
+            return new ResponseEntity<>(updateCat, HttpStatus.OK);
         }
-        return new ResponseEntity(bank, HttpStatus.OK);
+        return new ResponseEntity<>(bank, HttpStatus.OK);
     }
 }

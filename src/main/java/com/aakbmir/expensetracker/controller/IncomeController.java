@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,36 +21,36 @@ public class IncomeController {
     IncomeService incomeService;
 
     @PostMapping("/save-income")
-    public ResponseEntity saveIncome(@RequestBody Income income) {
+    public ResponseEntity<?> saveIncome(@RequestBody Income income) {
         if (income != null && income.getDate() != null
-                && income.getNote() != null && income.getPrice() != 0) {
+                && income.getNote() != null && income.getPrice().compareTo(new BigDecimal("0")) != 0) {
             Income cat = incomeService.saveIncome(income);
-            return new ResponseEntity(cat, HttpStatus.OK);
+            return new ResponseEntity<>(cat, HttpStatus.OK);
         } else {
             JSONObject json = new JSONObject().put("message", "invalid Request");
-            return new ResponseEntity(json.toString(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/get-income")
-    private ResponseEntity getIncome(@RequestParam(name = "incomeName") String incomeName) {
+    public ResponseEntity<?> getIncome(@RequestParam(name = "incomeName") String incomeName) {
         List<Income> income = incomeService.findByCategory(incomeName);
-        return new ResponseEntity(income, HttpStatus.OK);
+        return new ResponseEntity<>(income, HttpStatus.OK);
     }
 
     @GetMapping("/get-current-income")
-    public ResponseEntity getCurrentIncome(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        List<Income> incomesForMonth = incomeService.findByMonthAndYear(Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(incomesForMonth, HttpStatus.OK);
+    public ResponseEntity<?> getCurrentIncome(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        List<Income> incomesForMonth = incomeService.findByMonthAndYear(Integer.parseInt(year), Integer.parseInt(month));
+        return new ResponseEntity<>(incomesForMonth, HttpStatus.OK);
     }
 
     @DeleteMapping("/del-income/{id}")
-    private void deleteIncome(@PathVariable("id") Long id) {
+    public void deleteIncome(@PathVariable("id") Long id) {
         incomeService.deleteIncome(id);
     }
 
     @PostMapping("/update-income")
-    public ResponseEntity updateIncome(@RequestBody Income income) {
+    public ResponseEntity<?> updateIncome(@RequestBody Income income) {
         Optional<Income> incomeData = incomeService.findById(income.getId());
         if (incomeData.isPresent()) {
             Income incomeObj = incomeData.get();
@@ -59,8 +60,8 @@ public class IncomeController {
             incomeObj.setDate(income.getDate());
             incomeObj.setNote(income.getNote());
             Income updateCat = incomeService.saveIncome(incomeObj);
-            return new ResponseEntity(updateCat, HttpStatus.OK);
+            return new ResponseEntity<>(updateCat, HttpStatus.OK);
         }
-        return new ResponseEntity(income, HttpStatus.OK);
+        return new ResponseEntity<>(income, HttpStatus.OK);
     }
 }

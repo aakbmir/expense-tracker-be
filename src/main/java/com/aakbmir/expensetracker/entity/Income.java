@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -22,7 +23,7 @@ public class Income {
 
     private String category;
 
-    private double price;
+    private BigDecimal price;
 
     private Instant date;
 

@@ -3,6 +3,7 @@ package com.aakbmir.expensetracker.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -23,5 +24,5 @@ public class Bank {
 
     private Instant date;
 
-    private double price;
+    private BigDecimal price;
 }

@@ -6,6 +6,7 @@ import com.aakbmir.expensetracker.repository.BudgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +22,17 @@ public class BudgetService {
     CategoryService categoryService;
 
     public List<Budget> addAllBudgets() {
-        List<Category> categoryList = categoryService.getAllCategories();
+        List<Category> categoryList = categoryService.getAllCategoriesByMonthAndYear(0,0);
         List<Budget> budgetList = new ArrayList<>();
         for (Category cat : categoryList) {
-            Budget budgetObj = new Budget();
-            budgetObj.setPrice(0);
-            budgetObj.setDate(Instant.now());
-            budgetObj.setCategory(cat.getCategory());
-            budgetObj.setSubCategory(cat.getSubCategory());
-            budgetObj.setMainCategory(cat.getMainCategory());
-            budgetObj.setCategoryGroup(cat.getCategoryGroup());
+            Budget budgetObj = Budget.builder()
+                    .price(new BigDecimal("0.00"))
+                    .date(Instant.now())
+                    .category(cat.getCategory())
+                    .subCategory(cat.getSubCategory())
+                    .mainCategory(cat.getMainCategory())
+                    .categoryGroup(cat.getCategoryGroup())
+                    .build();
             budgetList.add(budgetObj);
         }
         budgetList = budgetRepository.saveAll(budgetList);
@@ -58,7 +60,6 @@ public class BudgetService {
     }
 
     public List<Budget> findByMonthAndYear(int year, int month) {
-        List<Budget> budgetList = budgetRepository.findByMonthAndYear(year, month);
-        return budgetList;
+        return budgetRepository.findByMonthAndYear(year, month);
     }
 }

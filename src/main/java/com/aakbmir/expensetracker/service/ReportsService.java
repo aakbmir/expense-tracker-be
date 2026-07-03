@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,14 +42,14 @@ public class ReportsService {
 
     public JSONArray calculateDataForOverviewReport(String requestedYear, String requestedMonth) {
 
-        List<Budget> totalBudget = null;
-        List<Expense> totalExpense = null;
+        List<Budget> totalBudget;
+        List<Expense> totalExpense;
         if (requestedMonth.equalsIgnoreCase("All")) {
-            totalBudget = budgetRepository.findByYear(Integer.valueOf(requestedYear));
-            totalExpense = expenseRepository.findByYear(Integer.valueOf(requestedYear));
+            totalBudget = budgetRepository.findByYear(Integer.parseInt(requestedYear));
+            totalExpense = expenseRepository.findByYear(Integer.parseInt(requestedYear));
         } else {
-            totalBudget = budgetRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
-            totalExpense = expenseRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
+            totalBudget = budgetRepository.findByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
+            totalExpense = expenseRepository.findByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
         }
         List<String> categoryList = commonUtils.fetchDistinctSubCategories();
 
@@ -63,17 +64,17 @@ public class ReportsService {
             for (Budget budgetObj : totalBudget) {
                 if (budgetObj.getSubCategory().equalsIgnoreCase(cat)) {
                     if (json.has("budget")) {
-                        double budObj = 0;
+                        BigDecimal budObj;
                         if (json.get("budget") instanceof Integer) {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         } else if (json.get("budget") instanceof Double) {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         } else if (json.get("budget") instanceof Long) {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         } else {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         }
-                        budObj = budObj + (double) budgetObj.getPrice();
+                        budObj = budObj.add(budgetObj.getPrice());
                         String formattedValue = df.format(budObj);
                         double result = Double.parseDouble(formattedValue);
                         json.put("budget", result);
@@ -87,17 +88,17 @@ public class ReportsService {
             for (Expense expenseObj : totalExpense) {
                 if (expenseObj.getSubCategory().equalsIgnoreCase(cat)) {
                     if (json.has("expense")) {
-                        double expObj = 0;
+                        BigDecimal expObj;
                         if (json.get("expense") instanceof Integer) {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         } else if (json.get("expense") instanceof Double) {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         } else if (json.get("expense") instanceof Long) {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         } else {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         }
-                        expObj = expObj + (double) expenseObj.getPrice();
+                        expObj = expObj.add(expenseObj.getPrice());
                         String formattedValue = df.format(expObj);
                         double result = Double.parseDouble(formattedValue);
                         json.put("expense", result);
@@ -144,17 +145,17 @@ public class ReportsService {
             for (Budget budgetObj : totalBudget) {
                 if (budgetObj.getSubCategory().equalsIgnoreCase(cat)) {
                     if (json.has("budget")) {
-                        double budObj = 0;
+                        BigDecimal budObj;
                         if (json.get("budget") instanceof Integer) {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         } else if (json.get("budget") instanceof Double) {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         } else if (json.get("budget") instanceof Long) {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         } else {
-                            budObj = (double) json.get("budget");
+                            budObj = new BigDecimal(String.valueOf(json.get("budget")));
                         }
-                        budObj = budObj + (double) budgetObj.getPrice();
+                        budObj = budObj.add(budgetObj.getPrice());
                         String formattedValue = df.format(budObj);
                         double result = Double.parseDouble(formattedValue);
                         json.put("budget", result);
@@ -168,17 +169,17 @@ public class ReportsService {
             for (Expense expenseObj : totalExpense) {
                 if (expenseObj.getSubCategory().equalsIgnoreCase(cat)) {
                     if (json.has("expense")) {
-                        double expObj = 0;
+                        BigDecimal expObj;
                         if (json.get("expense") instanceof Integer) {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         } else if (json.get("expense") instanceof Double) {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         } else if (json.get("expense") instanceof Long) {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         } else {
-                            expObj = (double) json.get("expense");
+                            expObj = new BigDecimal(String.valueOf(json.get("expense")));
                         }
-                        expObj = expObj + (double) expenseObj.getPrice();
+                        expObj = expObj.add(expenseObj.getPrice());
                         String formattedValue = df.format(expObj);
                         double result = Double.parseDouble(formattedValue);
                         json.put("expense", result);
@@ -205,7 +206,7 @@ public class ReportsService {
         return reportsRepository.findSubCategoryByMonthAndYear(year, month, superCategory);
     }
 
-    public ArrayList calculateDataForTrendsReport() {
+    public ArrayList<?> calculateDataForTrendsReport() {
         List<Budget> budgets = budgetRepository.findAllByOrderByDateAsc();
         List<Expense> expenses = expenseRepository.findAllByOrderByDateAsc();
         List<Income> incomes = incomeRepository.findAllByOrderByDateAsc();
@@ -220,8 +221,8 @@ public class ReportsService {
                 monthlyTotalsMap.put(monthYear, json);
             }
             JSONObject monthlyTotal = monthlyTotalsMap.get(monthYear);
-            double expObj = (double) monthlyTotal.get("totalExpense");
-            expObj = expObj + (double) expense.getPrice();
+            BigDecimal expObj = new BigDecimal(String.valueOf(monthlyTotal.get("totalExpense")));
+            expObj = expObj.add(expense.getPrice());
             String formattedValue = df.format(expObj);
             double result = Double.parseDouble(formattedValue);
             monthlyTotal.put("totalExpense", result);
@@ -235,8 +236,8 @@ public class ReportsService {
                 monthlyTotalsMap.put(monthYear, json);
             }
             JSONObject monthlyTotal = monthlyTotalsMap.get(monthYear);
-            double incomeObj = (double) monthlyTotal.get("totalIncome");
-            incomeObj = incomeObj + (double) income.getPrice();
+            BigDecimal incomeObj = new BigDecimal(String.valueOf(monthlyTotal.get("totalIncome")));
+            incomeObj = incomeObj.add(income.getPrice());
             String formattedValue = df.format(incomeObj);
             double result = Double.parseDouble(formattedValue);
             monthlyTotal.put("totalIncome", result);
@@ -250,8 +251,8 @@ public class ReportsService {
                 monthlyTotalsMap.put(monthYear, json);
             }
             JSONObject monthlyTotal = monthlyTotalsMap.get(monthYear);
-            double expObj = (double) monthlyTotal.get("totalBudget");
-            expObj = expObj + (double) budget.getPrice();
+            BigDecimal expObj = new BigDecimal(String.valueOf(monthlyTotal.get("totalBudget")));
+            expObj = expObj.add(budget.getPrice());
             String formattedValue = df.format(expObj);
             double result = Double.parseDouble(formattedValue);
             monthlyTotal.put("totalBudget", result);
@@ -261,17 +262,17 @@ public class ReportsService {
     }
 
     public List<ParentCategoryDTO> calculateDataForCategoryReport(String requestedYear, String requestedMonth) {
-        List<Category> categoryList = commonUtils.fetchAllCategories();
+        List<Category> categoryList = commonUtils.fetchAllCategories(0,0);
         Collections.sort(categoryList);
 
-        List<Budget> budgetList = null;
-        List<Expense> expenseList = null;
+        List<Budget> budgetList;
+        List<Expense> expenseList;
         if (requestedMonth.equalsIgnoreCase("All")) {
-            budgetList = budgetRepository.findByYear(Integer.valueOf(requestedYear));
-            expenseList = expenseRepository.findByYear(Integer.valueOf(requestedYear));
+            budgetList = budgetRepository.findByYear(Integer.parseInt(requestedYear));
+            expenseList = expenseRepository.findByYear(Integer.parseInt(requestedYear));
         } else {
-            budgetList = budgetRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
-            expenseList = expenseRepository.findByMonthAndYear(Integer.valueOf(requestedYear), Integer.valueOf(requestedMonth));
+            budgetList = budgetRepository.findByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
+            expenseList = expenseRepository.findByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
         }
 
         List<String> distinctParentCatList = categoryList.stream().map(Category::getMainCategory).distinct().collect(Collectors.toList());
@@ -343,7 +344,7 @@ public class ReportsService {
         List<Expense> expenseFilteredList = expenseList.stream().filter(item -> item.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
         if (!expenseFilteredList.isEmpty()) {
             double sum = expenseFilteredList.stream()
-                    .mapToDouble(Expense::getPrice)
+                    .mapToDouble(expense -> Double.parseDouble(String.valueOf(expense.getPrice())))
                     .sum();
             json.put("expense", sum);
             String result = "Partial";
@@ -364,7 +365,7 @@ public class ReportsService {
         double sum = 0;
         List<Budget> expenseFilteredList = budgetList.stream().filter(item -> item.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
         sum = expenseFilteredList.stream()
-                .mapToDouble(Budget::getPrice)
+                .mapToDouble(budget -> Double.parseDouble(String.valueOf(budget.getPrice())))
                 .sum();
         return sum;
     }
@@ -401,7 +402,7 @@ public class ReportsService {
         return json;
     }*/
 
-    public ArrayList calculateDataForSavingsReport() {
+    public ArrayList<?> calculateDataForSavingsReport() {
         double expensePrice = 0;
         double budgetPrice = 0;
         List<Expense> expenseList = null;
@@ -435,14 +436,14 @@ public class ReportsService {
             }
 
             if (expense.getCategory().equalsIgnoreCase("NRE") || expense.getCategory().equalsIgnoreCase("FRE")) {
-                double expObj = (double) monthlyTotal.get("totalAccount");
-                expObj = expObj + (double) expense.getPrice();
+                BigDecimal expObj = new BigDecimal(String.valueOf(monthlyTotal.get("totalAccount")));
+                expObj = expObj.add(expense.getPrice());
                 String formattedValue = df.format(expObj);
                 double result = Double.parseDouble(formattedValue);
                 monthlyTotal.put("totalAccount", result);
             } else {
-                double expObj = (double) monthlyTotal.get("totalInvest");
-                expObj = expObj + (double) expense.getPrice();
+                BigDecimal expObj = new BigDecimal(String.valueOf(monthlyTotal.get("totalInvest")));
+                expObj = expObj.add(expense.getPrice());
                 String formattedValue = df.format(expObj);
                 double result = Double.parseDouble(formattedValue);
                 monthlyTotal.put("totalInvest", result);
@@ -456,9 +457,9 @@ public class ReportsService {
         List<Bank> bankRecords = bankRepository.findAll();
         DecimalFormat df = new DecimalFormat("#.##");
         Map<String, JSONObject> monthlyTotalsMap = new TreeMap<>(Collections.reverseOrder());
-        double hdfcObj = 0;
-        double nbdObj = 0;
-        double mshObj = 0;
+        BigDecimal hdfcObj = new BigDecimal("0");
+        BigDecimal nbdObj = new BigDecimal("0");
+        BigDecimal mshObj = new BigDecimal("0");
         for (Bank bankRecordObj : bankRecords) {
             String monthYear = CommonUtils.getMonthYear(bankRecordObj.getDate());
             if (!monthlyTotalsMap.containsKey(monthYear)) {
@@ -470,17 +471,18 @@ public class ReportsService {
 
             String formattedValue = null;
             if (bankRecordObj.getName().equalsIgnoreCase("HDFC")) {
-                hdfcObj = hdfcObj + (double) bankRecordObj.getPrice();
+                hdfcObj = hdfcObj.add(bankRecordObj.getPrice());
                 formattedValue = df.format(hdfcObj);
             } else if (bankRecordObj.getName().equalsIgnoreCase("ENBD")) {
-                nbdObj = nbdObj + (double) bankRecordObj.getPrice();
+                nbdObj = nbdObj.add(bankRecordObj.getPrice());
                 formattedValue = df.format(nbdObj);
             } else if (bankRecordObj.getName().equalsIgnoreCase("Mashreq")) {
-                mshObj = mshObj + (double) bankRecordObj.getPrice();
+                mshObj = mshObj.add(bankRecordObj.getPrice());
                 formattedValue = df.format(mshObj);
             }
 
-            double result = Double.parseDouble(formattedValue);
+            assert formattedValue != null;
+            BigDecimal result = new BigDecimal(formattedValue);
             monthlyTotal.put(bankRecordObj.getName(), result);
             System.out.println(monthlyTotalsMap.values());
 

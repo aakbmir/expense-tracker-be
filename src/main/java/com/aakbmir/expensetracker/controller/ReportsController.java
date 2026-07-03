@@ -3,7 +3,6 @@ package com.aakbmir.expensetracker.controller;
 import com.aakbmir.expensetracker.DTO.ParentCategoryDTO;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.entity.Expense;
-import com.aakbmir.expensetracker.entity.MonthlyTotal;
 import com.aakbmir.expensetracker.service.ReportsService;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,68 +22,68 @@ public class ReportsController {
     ReportsService reportsService;
 
     @GetMapping("/overview-report")
-    public ResponseEntity getMonthlyOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+    public ResponseEntity<?> getMonthlyOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         JSONArray expensesForMonth = reportsService.calculateDataForOverviewReport(year, month);
-        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(expensesForMonth.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/super-category-report")
-    public ResponseEntity superCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
-        JSONArray expensesForMonth = reportsService.calculateDataForSuperCategoryReport(Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    public ResponseEntity<?> superCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+        JSONArray expensesForMonth = reportsService.calculateDataForSuperCategoryReport(Integer.parseInt(year), Integer.parseInt(month));
+        return new ResponseEntity<>(expensesForMonth.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/super-category-report-details")
-    public ResponseEntity superCategoryReportDetails(@RequestParam(name = "superCategory") String superCategory, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+    public ResponseEntity<?> superCategoryReportDetails(@RequestParam(name = "superCategory") String superCategory, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<Expense> json = reportsService.fetchSuperCategoryReportDetails(superCategory, Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(json, HttpStatus.OK);
+        return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
     @GetMapping("/trends-report")
-    public ResponseEntity getTrendsOverview() {
-        ArrayList<MonthlyTotal> expensesForMonth = reportsService.calculateDataForTrendsReport();
-        return new ResponseEntity(expensesForMonth.toString(), HttpStatus.OK);
+    public ResponseEntity<?> getTrendsOverview() {
+        ArrayList<?> expensesForMonth = reportsService.calculateDataForTrendsReport();
+        return new ResponseEntity<>(expensesForMonth.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/grouped-report")
-    public ResponseEntity getCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+    public ResponseEntity<?> getCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<ParentCategoryDTO> list = reportsService.calculateDataForCategoryReport(year, month);
-        return new ResponseEntity(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/category-report-details")
-    public ResponseEntity categoryReportDetails(@RequestParam(name = "category") String category, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
+    public ResponseEntity<?> categoryReportDetails(@RequestParam(name = "category") String category, @RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<Expense> json = reportsService.fetchCategoryReportDetails(category, Integer.valueOf(year), Integer.valueOf(month));
-        return new ResponseEntity(json, HttpStatus.OK);
+        return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
     @GetMapping("/refresh-cache")
-    public ResponseEntity refreshCache() {
-        return new ResponseEntity("success", HttpStatus.OK);
+    public ResponseEntity<?> refreshCache() {
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
     @GetMapping("/savings-report")
-    public ResponseEntity getSavingsReport() {
-        ArrayList<MonthlyTotal> savingsReportDTO = reportsService.calculateDataForSavingsReport();
-        return new ResponseEntity(savingsReportDTO.toString(), HttpStatus.OK);
+    public ResponseEntity<?> getSavingsReport() {
+        ArrayList<?> savingsReportDTO = reportsService.calculateDataForSavingsReport();
+        return new ResponseEntity<>(savingsReportDTO.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/bank-report")
-    public ResponseEntity getCategoryReport() {
-        ArrayList list = reportsService.calculateDataForBankReport();
-        return new ResponseEntity(list.toString(), HttpStatus.OK);
+    public ResponseEntity<?> getCategoryReport() {
+        ArrayList<?> list = reportsService.calculateDataForBankReport();
+        return new ResponseEntity<>(list.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/get-distinct-categories")
-    public ResponseEntity getDistinctCategories() {
+    public ResponseEntity<?> getDistinctCategories() {
         List<Category> catList = reportsService.getDistinctCategories();
-        return new ResponseEntity(catList, HttpStatus.OK);
+        return new ResponseEntity<>(catList, HttpStatus.OK);
     }
 
     @GetMapping("/get-expense")
-    private ResponseEntity getExpense(@RequestParam(name = "expenseName") String expenseName, @RequestParam String option) {
+    private ResponseEntity<?> getExpense(@RequestParam(name = "expenseName") String expenseName, @RequestParam String option) {
         List<Expense> cat = reportsService.findByCategory(expenseName, option);
-        return new ResponseEntity(cat, HttpStatus.OK);
+        return new ResponseEntity<>(cat, HttpStatus.OK);
     }
 
 }

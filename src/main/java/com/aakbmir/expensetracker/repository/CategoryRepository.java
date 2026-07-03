@@ -1,5 +1,6 @@
 package com.aakbmir.expensetracker.repository;
 
+import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,5 +14,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("SELECT DISTINCT p.subCategory FROM Category p order by subCategory asc")
     List<String> fetchDistinctSubCategories();
 
-    List<Category> findAllByOrderByCategoryAsc();
+    @Query("SELECT c FROM Category c WHERE YEAR(c.date) = :year AND MONTH(c.date) = :month order by c.mainCategory, subCategory, category asc")
+    List<Category> findAllByOrderByCategoryAsc(int year, int month);
 }

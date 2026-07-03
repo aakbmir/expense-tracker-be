@@ -21,7 +21,7 @@ public class ExpenseService {
 
     public Expense saveExpense(Expense expense) {
         Category category = null;
-        for (Category cat : commonUtils.fetchAllCategories()) {
+        for (Category cat : commonUtils.fetchAllCategories(0, 0)) {
             if (expense.getCategory().equalsIgnoreCase(cat.getCategory())) {
                 category = cat;
                 break;

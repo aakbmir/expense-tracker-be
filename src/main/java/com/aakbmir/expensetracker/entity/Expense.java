@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -28,7 +29,7 @@ public class Expense {
 
     private String categoryGroup;
 
-    private double price;
+    private BigDecimal price;
 
     private Instant date;
 

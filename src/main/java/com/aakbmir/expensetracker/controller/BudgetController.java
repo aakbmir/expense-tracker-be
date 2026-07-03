@@ -4,7 +4,8 @@ import com.aakbmir.expensetracker.entity.Budget;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.service.BudgetService;
 import com.aakbmir.expensetracker.utils.CommonUtils;
-import org.json.JSONObject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,23 +31,21 @@ public class BudgetController {
     }
 
     @PostMapping("/save-budget")
-    public ResponseEntity<Object> saveBudget(@RequestBody Budget budget) {
-        if (budget != null && budget.getCategory() != null && budget.getDate() != null) {
-            Category category = null;
-            for (Category cat : commonUtils.fetchAllCategories()) {
-                if (budget.getCategory().equalsIgnoreCase(cat.getCategory())) {
-                    category = cat;
-                    break;
-                }
+    public ResponseEntity<Object> saveBudget(@Valid @NotNull @RequestBody Budget budget) {
+
+        Category category = null;
+        for (Category cat : commonUtils.fetchAllCategories(0,0)) {
+            if (budget.getCategory().equalsIgnoreCase(cat.getCategory())) {
+                category = cat;
+                break;
             }
-            budget.setMainCategory(category.getMainCategory());
-            budget.setSubCategory(category.getSubCategory());
-            Budget cat = budgetService.saveBudget(budget);
-            return new ResponseEntity<>(cat, HttpStatus.OK);
-        } else {
-            JSONObject json = new JSONObject().put("message", "invalid Request");
-            return new ResponseEntity<>(json.toString(), HttpStatus.BAD_REQUEST);
         }
+        assert category != null;
+        budget.setMainCategory(category.getMainCategory());
+        budget.setSubCategory(category.getSubCategory());
+        Budget cat = budgetService.saveBudget(budget);
+        return new ResponseEntity<>(cat, HttpStatus.OK);
+
     }
 
     @GetMapping("/get-current-budget")
