@@ -25,8 +25,8 @@ public class BudgetController {
     CommonUtils commonUtils;
 
     @GetMapping("/add-all-budgets")
-    public ResponseEntity<List<Budget>> addAllBudgets() {
-        List<Budget> isAdded = budgetService.addAllBudgets();
+    public ResponseEntity<List<Budget>> addAllBudgets(@RequestParam String month, @RequestParam String year) {
+        List<Budget> isAdded = budgetService.addAllBudgets(Integer.parseInt(year), Integer.parseInt(month));
         return new ResponseEntity<>(isAdded, HttpStatus.OK);
     }
 

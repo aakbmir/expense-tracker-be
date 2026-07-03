@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BudgetService {
@@ -21,8 +20,8 @@ public class BudgetService {
     @Autowired
     CategoryService categoryService;
 
-    public List<Budget> addAllBudgets() {
-        List<Category> categoryList = categoryService.getAllCategoriesByMonthAndYear(0,0);
+    public List<Budget> addAllBudgets(int year, int month) {
+        List<Category> categoryList = categoryService.getAllCategoriesByMonthAndYear(year, month);
         List<Budget> budgetList = new ArrayList<>();
         for (Category cat : categoryList) {
             Budget budgetObj = Budget.builder()
@@ -39,20 +38,12 @@ public class BudgetService {
         return budgetList;
     }
 
-    public Budget saveBudget(Budget budget) {
-        return budgetRepository.save(budget);
+    public void saveBudget(Budget budget) {
+        budgetRepository.save(budget);
     }
 
     public List<Budget> findByBudget(String category) {
         return budgetRepository.findByCategory(category);
-    }
-
-    public Optional<Budget> findById(Long id) {
-        return budgetRepository.findById(id);
-    }
-
-    public void deleteBudget(Long id) {
-        budgetRepository.deleteById(id);
     }
 
     public Budget updateBudget(Budget budget) {
