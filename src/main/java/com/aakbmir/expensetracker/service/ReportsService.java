@@ -295,7 +295,6 @@ public class ReportsService {
                 for (Category distinctCatObj : filteredCategoryList) {
                     CategoryDTO categoryDTO = new CategoryDTO();
                     categoryDTO.setName(distinctCatObj.getCategory());
-                    categoryDTO.setCompleted(calculateExpenseValue(distinctCatObj.getCategory(), expenseList).get("completed").toString());
                     categoryDTO.setExpense(Double.parseDouble(calculateExpenseValue(distinctCatObj.getCategory(), expenseList).get("expense").toString()));
                     superCatExpense = superCatExpense + categoryDTO.getExpense();
                     categoryDTO.setBudget(calculateBudgetValue(distinctCatObj.getCategory(), budgetList));
@@ -307,23 +306,11 @@ public class ReportsService {
                 superCategoryDTO.setExpense(superCatExpense);
                 parentCatBudget = parentCatBudget + superCategoryDTO.getBudget();
                 parentCatExpense = parentCatExpense + superCategoryDTO.getExpense();
-                List<String> completedList = catDtoList.stream().map(CategoryDTO::getCompleted).distinct().toList();
-                if (completedList.size() == 1) {
-                    superCategoryDTO.setCompleted(completedList.get(0));
-                } else {
-                    superCategoryDTO.setCompleted("Partial");
-                }
                 superCatDtoList.add(superCategoryDTO);
             }
             parentCategoryDTO.setBudget(parentCatBudget);
             parentCategoryDTO.setExpense(parentCatExpense);
             parentCategoryDTO.setSubCategoryDtoList(superCatDtoList);
-            List<String> completedList = superCatDtoList.stream().map(SuperCategoryDTO::getCompleted).distinct().toList();
-            if (completedList.size() == 1) {
-                parentCategoryDTO.setCompleted(completedList.get(0));
-            } else {
-                parentCategoryDTO.setCompleted("Partial");
-            }
             parentCategoryDTOList.add(parentCategoryDTO);
         }
 
@@ -348,7 +335,6 @@ public class ReportsService {
             json.put("expense", sum);
         } else {
             json.put("expense", 0);
-            json.put("completed", "No");
         }
         return json;
     }

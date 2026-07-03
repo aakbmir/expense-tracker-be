@@ -17,8 +17,6 @@ public class SuperCategoryDTO {
 
     private List<CategoryDTO> categoryDtoList;
 
-    private String completed;
-
     private double budget;
 
     private double expense;

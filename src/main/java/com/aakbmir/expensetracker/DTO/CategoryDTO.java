@@ -15,7 +15,5 @@ public class CategoryDTO {
 
     private double budget;
 
-    private String completed;
-
     private double expense;
 }
