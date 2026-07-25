@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -48,6 +49,7 @@ public class CategoryController {
                 .subCategory(cat.getSubCategory())
                 .categoryGroup(cat.getCategoryGroup())
                 .date(cat.getDate())
+                .price(new BigDecimal("0.0"))
                 .build();
         budgetService.saveBudget(budget);
     }
