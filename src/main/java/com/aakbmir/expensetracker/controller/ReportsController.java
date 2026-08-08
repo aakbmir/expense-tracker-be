@@ -3,6 +3,8 @@ package com.aakbmir.expensetracker.controller;
 import com.aakbmir.expensetracker.DTO.ParentCategoryDTO;
 import com.aakbmir.expensetracker.entity.Category;
 import com.aakbmir.expensetracker.entity.Expense;
+import com.aakbmir.expensetracker.entity.Income;
+import com.aakbmir.expensetracker.service.IncomeService;
 import com.aakbmir.expensetracker.service.ReportsService;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,17 @@ public class ReportsController {
     @Autowired
     ReportsService reportsService;
 
+    @Autowired
+    IncomeService incomeService;
+
     @GetMapping("/overview-report")
     public ResponseEntity<?> getMonthlyOverview(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         JSONArray expensesForMonth = reportsService.calculateDataForOverviewReport(year, month);
-        return new ResponseEntity<>(expensesForMonth.toString(), HttpStatus.OK);
+        List<Income> incomeList = incomeService.findByMonthAndYear(Integer.parseInt(year), Integer.parseInt(month));
+        GroupReport groupReport = new GroupReport();
+        groupReport.setExpenses(expensesForMonth.toList());
+        groupReport.setIncome(incomeList.get(0));
+        return new ResponseEntity<>(groupReport, HttpStatus.OK);
     }
 
     @GetMapping("/super-category-report")
@@ -48,7 +57,11 @@ public class ReportsController {
     @GetMapping("/grouped-report")
     public ResponseEntity<?> getCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
         List<ParentCategoryDTO> list = reportsService.calculateDataForCategoryReport(year, month);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        List<Income> incomeList = incomeService.findByMonthAndYear(Integer.parseInt(year), Integer.parseInt(month));
+        GroupReport groupReport = new GroupReport();
+        groupReport.setParentCategoryDTOList(list);
+        groupReport.setIncome(incomeList.get(0));
+        return new ResponseEntity<>(groupReport, HttpStatus.OK);
     }
 
     @GetMapping("/category-report-details")
