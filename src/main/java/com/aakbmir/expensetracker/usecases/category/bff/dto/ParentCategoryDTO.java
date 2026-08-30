@@ -1,0 +1,26 @@
+package com.aakbmir.expensetracker.usecases.category.bff.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class ParentCategoryDTO {
+
+    private String name;
+
+    private List<SuperCategoryDTO> subCategoryDtoList;
+
+    private double budget;
+
+    private double expense;
+
+    @Builder.Default
+    private boolean expanded = true;
+}

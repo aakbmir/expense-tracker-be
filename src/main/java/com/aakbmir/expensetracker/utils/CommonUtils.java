@@ -1,7 +1,10 @@
 package com.aakbmir.expensetracker.utils;
 
-import com.aakbmir.expensetracker.entity.Category;
-import com.aakbmir.expensetracker.repository.CategoryRepository;
+import com.aakbmir.expensetracker.usecases.category.repository.CategoryRepository;
+import com.aakbmir.expensetracker.usecases.category.repository.entity.Category;
+import com.aakbmir.expensetracker.utils.enums.CategoryStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class CommonUtils {
@@ -27,20 +29,19 @@ public class CommonUtils {
     }
 
     public List<String> fetchDistinctSubCategories() {
-        return categoryRepository.fetchDistinctSubCategories();
+        return categoryRepository.fetchDistinctSuperCategories();
     }
 
-    public List<Category> fetchAllCategories(int year, int month) {
-        return categoryRepository.findAllByOrderByCategoryAsc(year, month);
+    public List<Category> fetchAllCategories(@NotNull boolean showAll, @NotBlank int year, @NotBlank int month) {
+        if (showAll) {
+            return categoryRepository.findAllByOrderByCategoryAsc(year, month);
+        } else {
+            return categoryRepository.findActiveByOrderByCategoryAsc(CategoryStatus.ACTIVE, year, month);
+        }
     }
 
     public List<Category> fetchAllCategories() {
         return categoryRepository.findAllByOrderByCategoryAsc();
-    }
-
-    public Category fetchCategoryByID(Long id) {
-        List<Category> categoryList = categoryRepository.findAllByOrderByMainCategoryAscSubCategoryAscCategoryAsc();
-        return categoryList.stream().filter(item -> Objects.equals(item.getId(), id)).toList().get(0);
     }
 
     public static String getMonthYear(Instant date) {
