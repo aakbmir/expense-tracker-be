@@ -9,9 +9,9 @@ RUN gradle build --no-daemon
 FROM amazoncorretto:17-alpine
 WORKDIR /app
 RUN pwd && ls -la
-COPY --from=builder /app/build/libs/savings-tracker-be-0.0.1-SNAPSHOT.jar /app/tracker-savings-be.jar
+COPY --from=builder /app/build/libs/expense-tracker-be-0.0.1-SNAPSHOT.jar /app/tracker-expense-be.jar
 EXPOSE 8080
-CMD ["java", "-jar", "tracker-savings-be.jar"]
+CMD ["java", "-jar", "tracker-expense-be.jar"]
 
 # FROM gradle:7.6.1-alpine AS build
 # COPY . .
@@ -20,7 +20,7 @@ CMD ["java", "-jar", "tracker-savings-be.jar"]
 # EXPOSE 8080
 # RUN pwd
 # RUN mkdir /app
-# COPY --from=build /build/libs/savings-tracker-be-0.0.1-SNAPSHOT.jar app.jar
+# COPY --from=build /build/libs/expense-tracker-be-0.0.1-SNAPSHOT.jar app.jar
 # ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","app.jar"]
 
 # FROM gradle:7.6.1-jdk17 as builder
@@ -32,6 +32,6 @@ CMD ["java", "-jar", "tracker-savings-be.jar"]
 #
 # FROM openjdk:17-jdk-slim-buster
 # WORKDIR /app
-# COPY --from=builder /app/build/libs/savings-tracker-be-0.0.1-SNAPSHOT /app/tracker-savings-be.jar
+# COPY --from=builder /app/build/libs/expense-tracker-be-0.0.1-SNAPSHOT /app/tracker-expense-be.jar
 # EXPOSE 8080
-# CMD ["java", "-jar", "tracker-savings-be.jar"]
+# CMD ["java", "-jar", "tracker-expense-be.jar"]
