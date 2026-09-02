@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
-@Table(name = "expense")
+@Table(name = "savings")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,14 +18,14 @@ public class Savings {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "expense_id")
-    private Long expenseId;
+    @Column(name = "savings_id")
+    private Long savingsId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "category_id",
             nullable = false,
-            foreignKey = @ForeignKey(name = "fk_expense_category")
+            foreignKey = @ForeignKey(name = "fk_savings_category")
     )
     private Category category;
 

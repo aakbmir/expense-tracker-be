@@ -12,10 +12,12 @@ import java.time.ZonedDateTime;
 
 @Builder
 public record SavingsDTO(
-        Long savingId,
-        @NotNull CategoryApiDTO categoryApiDTO,
+        Long savingsId,
+        CategoryApiDTO categoryApiDTO,
+        Long categoryId,
         @GstDateTime @NotNull ZonedDateTime date,
         @NotNull @Positive BigDecimal amount,
         @NotBlank String description,
-        boolean miscellaneous) {
+        int year,
+        int month) {
 }

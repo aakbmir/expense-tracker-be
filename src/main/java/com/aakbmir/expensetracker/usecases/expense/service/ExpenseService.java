@@ -64,6 +64,8 @@ public class ExpenseService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         expense.setAmount(expenseDTO.amount());
+        expense.setDate(expenseDTO.date().toInstant());
+        expense.setDescription(expenseDTO.description());
         if (category.getCategoryId().compareTo(expense.getCategory().getCategoryId()) != 0) {
             expense.setCategory(category);
         }

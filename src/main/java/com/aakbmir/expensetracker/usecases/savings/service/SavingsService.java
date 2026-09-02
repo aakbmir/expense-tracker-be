@@ -1,53 +1,74 @@
 package com.aakbmir.expensetracker.usecases.savings.service;
 
+import com.aakbmir.expensetracker.usecases.category.repository.CategoryRepository;
+import com.aakbmir.expensetracker.usecases.category.repository.entity.Category;
+import com.aakbmir.expensetracker.usecases.savings.api.dto.SavingsDTO;
+import com.aakbmir.expensetracker.usecases.savings.repository.SavingsRepository;
+import com.aakbmir.expensetracker.usecases.savings.repository.entity.Savings;
+import com.aakbmir.expensetracker.usecases.savings.service.mapper.SavingsMapper;
+import com.aakbmir.expensetracker.utils.CommonUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+import static com.aakbmir.expensetracker.usecases.savings.service.mapper.SavingsMapper.mapToSavings;
+import static com.aakbmir.expensetracker.usecases.savings.service.mapper.SavingsMapper.mapToSavingsDTO;
+
 @Service
+@RequiredArgsConstructor
 public class SavingsService {
 
-/*    @Autowired
-    ExpenseRepository expenseRepository;
+    private final SavingsRepository savingsRepository;
 
-    @Autowired
-    CommonUtils commonUtils;
+    private final CategoryRepository categoryRepository;
 
-    public Expense saveExpense(ExpenseDTO expense) {
-        Category category = null;
+    private final CommonUtils commonUtils;
 
-        ZonedDateTime zdt =
-                expense.date().atZone(ZoneId.of("Asia/Dubai"));
+    public SavingsDTO saveSavings(SavingsDTO savingsDTO) {
+        Category category = categoryRepository.findById(savingsDTO.categoryId()).get();
+        Savings savings = mapToSavings(savingsDTO, category);
+        savings = savingsRepository.save(savings);
+        return mapToSavingsDTO(savings);
+    }
 
-        int month = zdt.getMonthValue();
-        int year = zdt.getYear();
+    /*  public List<Savings> findByCategory(String savings) {
+          if (savings == null || savings.equalsIgnoreCase("")) {
+              return savingsRepository.findAllByCategory();
+          } else {
+              return savingsRepository.findCategory(savings);
+          }
+      }
 
-        for (Category cat : commonUtils.fetchAllCategories(year, month)) {
-            if (expense.getCategory().equalsIgnoreCase(cat.getCategory())) {
-                category = cat;
-                break;
-            }
+      public Optional<Savings> findById(Long id) {
+          return savingsRepository.findById(id);
+      }
+  */
+
+    public void deleteSavings(Long id) {
+        savingsRepository.deleteById(id);
+    }
+
+    public List<SavingsDTO> findByMonthAndYear(int year, int month) {
+        List<Savings> savingsDTOList = savingsRepository.findByMonthAndYear(year, month);
+        return savingsDTOList.stream()
+                .map(SavingsMapper::mapToSavingsDTO)
+                .toList();
+    }
+
+    public void updateSavings(SavingsDTO savingsDTO) {
+        Savings savings = savingsRepository.findById(savingsDTO.savingsId())
+                .orElseThrow(() -> new RuntimeException("Savings not found"));
+
+        Category category = categoryRepository.findById(savingsDTO.categoryApiDTO().categoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        savings.setAmount(savingsDTO.amount());
+        savings.setDate(savingsDTO.date().toInstant());
+        savings.setDescription(savingsDTO.description());
+        if (category.getCategoryId().compareTo(savings.getCategory().getCategoryId()) != 0) {
+            savings.setCategory(category);
         }
-        expense.setMainCategory(category.getMainCategory());
-        expense.setSubCategory(category.getSubCategory());
-        return expenseRepository.save(expense);
+        savingsRepository.save(savings);
     }
-
-    public List<Expense> findByCategory(String expense) {
-        if (expense == null || expense.equalsIgnoreCase("")) {
-            return expenseRepository.findAllByCategory();
-        } else {
-            return expenseRepository.findCategory(expense);
-        }
-    }
-
-    public Optional<Expense> findById(Long id) {
-        return expenseRepository.findById(id);
-    }
-
-    public void deleteExpense(Long id) {
-        expenseRepository.deleteById(id);
-    }
-
-    public List<Expense> findByMonthAndYear(int year, int month) {
-        return expenseRepository.findByMonthAndYear(year, month);
-    }*/
 }

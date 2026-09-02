@@ -53,10 +53,11 @@ public class CategoryController {
     @GetMapping("/get-all-categories")
     public ResponseEntity<CategoryResponse> getAllCategory(@NotNull @RequestParam(name = "showInactive") Boolean showInactive,
                                                            @NotBlank @RequestParam(name = "month") String month,
-                                                           @NotBlank @RequestParam(name = "year") String year) {
+                                                           @NotBlank @RequestParam(name = "year") String year,
+                                                           @NotBlank @RequestParam(name = "feature") String feature) {
 
         CategoryResponse catList = categoryService.getAllCategoriesByMonthAndYear(showInactive,
-                Integer.parseInt(year), Integer.parseInt(month));
+                Integer.parseInt(year), Integer.parseInt(month), feature);
         return new ResponseEntity<>(catList, HttpStatus.OK);
     }
 

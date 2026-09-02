@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aakbmir.expensetracker.usecases.category.service.mapper.CategoryMapper.mapToCategory;
@@ -80,12 +77,44 @@ public class CategoryService {
     }
 
     public CategoryResponse getAllCategoriesByMonthAndYear(@NotNull boolean showInactive,
-                                                           @NotBlank int year, @NotBlank int month) {
-        List<Category> categories = commonUtils.fetchAllCategories(showInactive, year, month);
+                                                           @NotBlank int year, @NotBlank int month,
+                                                           @NotBlank String feature) {
+        List<Category> categories = new ArrayList<>();
+        if (feature.equalsIgnoreCase("Category")) {
+            categories = commonUtils.fetchAllCategories(showInactive, year, month);
+            categories = excludeInvestments(categories);
+        } else if (feature.equalsIgnoreCase("Expense")) {
+            categories = commonUtils.fetchAllCategories(showInactive, year, month);
+            categories = excludeOtherThanInvestments(categories);
+        } else{
+            categories = commonUtils.fetchAllCategories(showInactive, year, month);
+            categories = excludeOtherThanInvestments(categories);
+        }
         if (categories.isEmpty()) {
             return CategoryResponse.builder().build();
         }
         return transformCategories(categories);
+    }
+
+    private List<Category> excludeInvestments(List<Category> categories) {
+        List<Category> categoryList = new ArrayList<>();
+        for (Category cat : categories) {
+            System.out.println(cat.getMainCategory());
+            if (!cat.getMainCategory().equalsIgnoreCase("Investments")) {
+                categoryList.add(cat);
+            }
+        }
+        return categoryList;
+    }
+
+    private List<Category> excludeOtherThanInvestments(List<Category> categories) {
+        List<Category> categoryList = new ArrayList<>();
+        for (Category cat : categories) {
+            if (cat.getMainCategory().equalsIgnoreCase("Investments")) {
+                categoryList.add(cat);
+            }
+        }
+        return categoryList;
     }
 
     private CategoryResponse transformCategories(List<Category> categories) {
