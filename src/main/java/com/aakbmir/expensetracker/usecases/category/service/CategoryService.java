@@ -88,7 +88,6 @@ public class CategoryService {
             categories = excludeOtherThanInvestments(categories);
         } else{
             categories = commonUtils.fetchAllCategories(showInactive, year, month);
-            categories = excludeOtherThanInvestments(categories);
         }
         if (categories.isEmpty()) {
             return CategoryResponse.builder().build();
@@ -99,7 +98,6 @@ public class CategoryService {
     private List<Category> excludeInvestments(List<Category> categories) {
         List<Category> categoryList = new ArrayList<>();
         for (Category cat : categories) {
-            System.out.println(cat.getMainCategory());
             if (!cat.getMainCategory().equalsIgnoreCase("Investments")) {
                 categoryList.add(cat);
             }
