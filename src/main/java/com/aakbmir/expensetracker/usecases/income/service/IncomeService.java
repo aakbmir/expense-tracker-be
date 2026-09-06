@@ -1,9 +1,7 @@
 package com.aakbmir.expensetracker.usecases.income.service;
 
-import com.aakbmir.expensetracker.usecases.category.repository.entity.Category;
 import com.aakbmir.expensetracker.usecases.income.repository.IncomeRepository;
 import com.aakbmir.expensetracker.usecases.income.repository.entity.Income;
-import com.aakbmir.expensetracker.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +14,7 @@ public class IncomeService {
     @Autowired
     IncomeRepository incomeRepository;
 
-    @Autowired
-    CommonUtils commonUtils;
-
     public Income saveIncome(Income income) {
-        Category category = null;
-        for (Category cat : commonUtils.fetchAllCategories(true, 0,0)) {
-            if (income.getCategory().equalsIgnoreCase(cat.getCategory())) {
-                category = cat;
-                break;
-            }
-        }
         return incomeRepository.save(income);
     }
 

@@ -8,8 +8,11 @@ import java.util.List;
 
 public interface SavingsRepository extends JpaRepository<Savings, Long> {
 
-    @Query("SELECT e FROM Savings e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
+    @Query("SELECT s FROM Savings s WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month order by s.date desc")
     List<Savings> findByMonthAndYear(int year, int month);
+
+    @Query("SELECT s FROM Savings s JOIN FETCH s.category WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month order by s.date desc")
+    List<Savings> findSavingsAndCatByMonthAndYear(int year, int month);
 
     @Query("SELECT e FROM Savings e WHERE YEAR(e.date) = :year order by date desc")
     List<Savings> findByYear(int year);

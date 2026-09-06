@@ -19,6 +19,9 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
     @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month")
     List<Budget> findByMonthAndYear(int year, int month);
 
+    @Query("  SELECT b FROM Budget b JOIN FETCH b.category WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month")
+    List<Budget> findBudgetAndCatByMonthAndYear(int year, int month);
+
     @Modifying
     @Transactional
     @Query("UPDATE Budget b SET budgetAmount = :budgetAmount WHERE budgetId = :budgetId")

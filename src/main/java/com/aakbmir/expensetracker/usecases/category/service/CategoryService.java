@@ -86,7 +86,7 @@ public class CategoryService {
         } else if (feature.equalsIgnoreCase("Expense")) {
             categories = commonUtils.fetchAllCategories(showInactive, year, month);
             categories = excludeOtherThanInvestments(categories);
-        } else{
+        } else {
             categories = commonUtils.fetchAllCategories(showInactive, year, month);
         }
         if (categories.isEmpty()) {
@@ -212,5 +212,14 @@ public class CategoryService {
                 .date(date)
                 .financialTypes(financialTypes)
                 .build();
+    }
+
+    public BigDecimal getCategoryBudgetAmount(int year, int month) {
+        List<Category> categories = commonUtils.fetchAllCategories(true, year, month);
+
+        return categories.stream()
+                .filter(cat -> "Investments".equals(cat.getMainCategory()))
+                .map(Category::getBudgetAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

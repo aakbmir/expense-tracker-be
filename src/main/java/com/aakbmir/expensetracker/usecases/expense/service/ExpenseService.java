@@ -50,7 +50,7 @@ public class ExpenseService {
     }
 
     public List<ExpenseDTO> findByMonthAndYear(int year, int month) {
-        List<Expense> expenseDTOList = expenseRepository.findByMonthAndYear(year, month);
+        List<Expense> expenseDTOList = expenseRepository.findExpenseAndCatByMonthAndYear(year, month);
         return expenseDTOList.stream()
                 .map(ExpenseMapper::mapToExpenseDTO)
                 .toList();

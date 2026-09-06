@@ -1,5 +1,6 @@
 package com.aakbmir.expensetracker.usecases.savings.api;
 
+import com.aakbmir.expensetracker.usecases.category.service.CategoryService;
 import com.aakbmir.expensetracker.usecases.savings.api.dto.SavingsDTO;
 import com.aakbmir.expensetracker.usecases.savings.service.SavingsService;
 import jakarta.validation.Valid;
@@ -9,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/savings")
@@ -18,6 +21,8 @@ import java.util.List;
 public class SavingsController {
 
     private final SavingsService savingsService;
+
+    private final CategoryService categoryService;
 
     @PostMapping("/save-savings")
     public ResponseEntity<?> saveSavings(@NotNull @Valid @RequestBody SavingsDTO savingsDTO) {
@@ -35,9 +40,15 @@ public class SavingsController {
     public ResponseEntity<?> getCurrentSavings(@RequestParam(name = "month") String month,
                                                @RequestParam(name = "year") String year) {
 
-        List<SavingsDTO> savingssForMonth = savingsService.findByMonthAndYear(Integer.parseInt(year),
+        List<SavingsDTO> savingsForMonth = savingsService.findByMonthAndYear(Integer.parseInt(year),
                 Integer.parseInt(month));
-        return new ResponseEntity<>(savingssForMonth, HttpStatus.OK);
+        BigDecimal budgetAmount = categoryService.getCategoryBudgetAmount(Integer.parseInt(year), Integer.parseInt(month));
+
+        Map<String, Object> response = Map.of(
+                "savingsList", savingsForMonth,
+                "budgetAmount", budgetAmount
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/del-savings/{id}")

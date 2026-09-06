@@ -66,8 +66,8 @@ public class ReportsService {
             totalBudget = budgetRepository.findByYear(Integer.parseInt(requestedYear));
             totalExpense = expenseRepository.findByYear(Integer.parseInt(requestedYear));
         } else {
-            totalBudget = budgetRepository.findByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
-            totalExpense = expenseRepository.findByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
+            totalBudget = budgetRepository.findBudgetAndCatByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
+            totalExpense = expenseRepository.findExpenseAndCatByMonthAndYear(Integer.parseInt(requestedYear), Integer.parseInt(requestedMonth));
         }
         List<String> categoryList = commonUtils.fetchDistinctSubCategories();
 
@@ -317,7 +317,7 @@ public class ReportsService {
     public List<ExpenseDTO> findByCategory(String expenseName, String option) {
         if (option.equalsIgnoreCase("Category")) {
             if (expenseName == null || expenseName.equalsIgnoreCase("")) {
-                List<Expense> expenseList = expenseRepository.findAllByCategory();
+                List<Expense> expenseList = expenseRepository.findAllDataByCategory();
                 return expenseList.stream()
                         .map(ExpenseMapper::mapToExpenseDTO)
                         .toList();
@@ -328,17 +328,17 @@ public class ReportsService {
                         .toList();
             }
         } else if (option.equalsIgnoreCase("Super")) {
-            List<Expense> expenseList = expenseRepository.findAllByCategory();
+            List<Expense> expenseList = expenseRepository.findAllDataByCategory();
             return expenseList.stream().filter(exp -> exp.getCategory().getSuperCategory().equalsIgnoreCase(expenseName))
                     .map(ExpenseMapper::mapToExpenseDTO)
                     .toList();
         } else if (option.equalsIgnoreCase("Parent")) {
-            List<Expense> expenseList = expenseRepository.findAllByCategory();
+            List<Expense> expenseList = expenseRepository.findAllDataByCategory();
             return expenseList.stream().filter(exp -> exp.getCategory().getMainCategory().equalsIgnoreCase(expenseName))
                     .map(ExpenseMapper::mapToExpenseDTO)
                     .toList();
         } else {
-            List<Expense> expenseList = expenseRepository.findAllByCategory();
+            List<Expense> expenseList = expenseRepository.findAllDataByCategory();
             return expenseList.stream()
                     .map(ExpenseMapper::mapToExpenseDTO)
                     .toList();

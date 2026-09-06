@@ -50,7 +50,7 @@ public class SavingsService {
     }
 
     public List<SavingsDTO> findByMonthAndYear(int year, int month) {
-        List<Savings> savingsDTOList = savingsRepository.findByMonthAndYear(year, month);
+        List<Savings> savingsDTOList = savingsRepository.findSavingsAndCatByMonthAndYear(year, month);
         return savingsDTOList.stream()
                 .map(SavingsMapper::mapToSavingsDTO)
                 .toList();
