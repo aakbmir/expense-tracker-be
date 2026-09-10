@@ -11,9 +11,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
     List<Expense> findByMonthAndYear(int year, int month);
 
-    @Query("SELECT e FROM Expense e JOIN FETCH e.category WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
-    List<Expense> findExpenseAndCatByMonthAndYear(int year, int month);
-
     @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year order by date desc")
     List<Expense> findByYear(int year);
 
@@ -23,25 +20,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e where e.category=:category order by date desc")
     List<Expense> findCategory(String category);
 
-    List<Expense> findAllByOrderByDateAsc();
+    @Query("SELECT e FROM Expense e JOIN FETCH e.category c WHERE c.category=:category AND" +
+            " YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
+    List<Expense> findExpenseAndCatByCategoryAndMonthAndYear(String category, int year, int month);
 
-    /*@Query("SELECT e FROM Expense e where e.subCategory=:subCategory order by date desc")
-    List<Expense> findSubCategory(String subCategory);
+    @Query("SELECT e FROM Expense e JOIN FETCH e.category c WHERE c.superCategory=:superCategory AND" +
+            " YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
+    List<Expense> findExpenseAndCatBySuperCategoryAndMonthAndYear(String superCategory, int year, int month);
 
-    @Query("SELECT e FROM Expense e where e.mainCategory=:mainCategory order by date desc")
-    List<Expense> findMainCategory(String mainCategory);
-
-
-
-
-
-    @Query("SELECT e FROM Expense e WHERE e.mainCategory=:mainCategory and category != 'Stocks' order by e.date desc")
-    List<Expense> fetchMainCategoryExpense(String mainCategory);
-
-    @Query("SELECT sum(price) FROM Expense e WHERE YEAR(e.date) = :year")
-    double fetchSumByYear(int year);
-
-    @Query("SELECT TO_CHAR(date, 'YYYY-MM') AS month, SUM(price) AS total_price FROM Expense ec  GROUP BY TO_CHAR(date, 'YYYY-MM') ORDER BY month")
-    List<Object[]> fetchSumByYearAndMonth();*/
-
+    @Query("SELECT e FROM Expense e JOIN FETCH e.category c WHERE c.mainCategory=:mainCategory AND" +
+            " YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
+    List<Expense> findExpenseAndCatByMainCategoryAndMonthAndYear(String mainCategory, int year, int month);
 }

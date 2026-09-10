@@ -10,38 +10,32 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
-    Optional<Budget> findByCategory_CategoryId(Long categoryId);
-
-    @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month")
-    List<Budget> findByMonthAndYear(int year, int month);
-
-    @Query("  SELECT b FROM Budget b JOIN FETCH b.category WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month")
+    @Query("  SELECT b FROM Budget b JOIN FETCH b.category WHERE YEAR(b.date) = :year AND MONTH(b.date) = :month order by b.date desc")
     List<Budget> findBudgetAndCatByMonthAndYear(int year, int month);
 
     @Modifying
     @Transactional
     @Query("UPDATE Budget b SET budgetAmount = :budgetAmount WHERE budgetId = :budgetId")
-    int updateBudget(@NotNull @Positive BigDecimal budgetAmount, Long budgetId);
+    void updateBudget(@NotNull @Positive BigDecimal budgetAmount, Long budgetId);
 
     @Query("SELECT b FROM Budget b WHERE YEAR(b.date) = :year")
     List<Budget> findByYear(int year);
 
-    List<Budget> findAllByOrderByDateAsc();
+    @Query("SELECT b FROM Budget b JOIN FETCH b.category order by b.date desc")
+    List<Budget> findAllDataByCategory();
 
-    /*    List<Budget> findByCategory(String budgetName);
+    @Query("SELECT e FROM Budget e JOIN FETCH e.category c WHERE c.category=:category AND" +
+            " YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
+    List<Budget> findBudgetAndCatByCategoryAndMonthAndYear(String category, int year, int month);
 
+    @Query("SELECT e FROM Budget e JOIN FETCH e.category c WHERE c.superCategory=:superCategory AND" +
+            " YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
+    List<Budget> findBudgetAndCatBySuperCategoryAndMonthAndYear(String superCategory, int year, int month);
 
-
-
-
-
-    @Query("SELECT sum(price) FROM Budget e WHERE YEAR(e.date) = :year")
-    double fetchSumByYear(int year);
-
-    @Query("SELECT TO_CHAR(date, 'YYYY-MM') AS month, SUM(price) AS total_price FROM Budget ec GROUP BY TO_CHAR(date, 'YYYY-MM') ORDER BY month")
-    List<Object[]> fetchSumByYearAndMonth();*/
+    @Query("SELECT e FROM Budget e JOIN FETCH e.category c WHERE c.mainCategory=:mainCategory AND" +
+            " YEAR(e.date) = :year AND MONTH(e.date) = :month order by e.date desc")
+    List<Budget> findBudgetAndCatByMainCategoryAndMonthAndYear(String mainCategory, int year, int month);
 }

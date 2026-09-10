@@ -1,19 +1,15 @@
 package com.aakbmir.expensetracker.usecases.reports.api;
 
 import com.aakbmir.expensetracker.usecases.category.bff.dto.CategoryApiDTO;
-import com.aakbmir.expensetracker.usecases.category.bff.dto.ParentCategoryDTO;
 import com.aakbmir.expensetracker.usecases.expense.api.dto.ExpenseDTO;
-import com.aakbmir.expensetracker.usecases.income.repository.entity.Income;
 import com.aakbmir.expensetracker.usecases.income.service.IncomeService;
-import com.aakbmir.expensetracker.usecases.reports.api.dto.GroupReport;
+import com.aakbmir.expensetracker.usecases.reports.api.dto.OverviewRecord;
 import com.aakbmir.expensetracker.usecases.reports.service.ReportsService;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,16 +29,27 @@ public class ReportsController {
     }
 
     @GetMapping("/overview-report")
-    public ResponseEntity<?> getMonthlyOverview(@RequestParam(name = "month") String month,
-                                                @RequestParam(name = "year") String year) {
+    public ResponseEntity<OverviewRecord> getMonthlyOverview(@RequestParam(name = "month") String month,
+                                                             @RequestParam(name = "year") String year) {
+        OverviewRecord overviewRecord = reportsService.calculateAllReportFields(year, month);
+        return new ResponseEntity<>(overviewRecord, HttpStatus.OK);
+    }
 
-        JSONArray expensesForMonth = reportsService.calculateDataForOverviewReport(year, month);
+    /*@GetMapping("/overview-report1")
+    public ResponseEntity<?> getMonthlyOverview1(@RequestParam(name = "month") String month,
+                                                 @RequestParam(name = "year") String year,
+                                                 @RequestParam(name = "expenseName") String expenseName,
+                                                 @RequestParam(name = "option") String option) {
+
+        List<ExpenseDTO> expensesForMonth = reportsService.calculateDataForOverviewReport(expenseName, option, year, month);
+        List<BudgetDTO> budgetForMonth = reportsService.findBudgetForOverviewReport(expenseName, option, year, month);
         List<Income> incomeList = incomeService.findByMonthAndYear(Integer.parseInt(year), Integer.parseInt(month));
         GroupReport groupReport = new GroupReport();
-        groupReport.setExpenses(expensesForMonth.toList());
-        groupReport.setIncome(!incomeList.isEmpty() ? incomeList.get(0): null);
+        groupReport.setExpenses(expensesForMonth);
+        groupReport.setBudgets(budgetForMonth);
+        groupReport.setIncome(!incomeList.isEmpty() ? incomeList.get(0) : null);
         return new ResponseEntity<>(groupReport, HttpStatus.OK);
-    }
+    }*/
 
 /*    @GetMapping("/super-category-report")
     public ResponseEntity<?> superCategoryReport(@RequestParam(name = "month") String month, @RequestParam(name = "year") String year) {
@@ -87,7 +94,7 @@ public class ReportsController {
         return new ResponseEntity<>(cat, HttpStatus.OK);
     }
 
-    @GetMapping("/trends-report")
+    /*@GetMapping("/trends-report")
     public ResponseEntity<?> getTrendsOverview() {
         ArrayList<?> expensesForMonth = reportsService.calculateDataForTrendsReport();
         return new ResponseEntity<>(expensesForMonth.toString(), HttpStatus.OK);
@@ -101,6 +108,6 @@ public class ReportsController {
         groupReport.setParentCategoryDTOList(list);
         groupReport.setIncome(incomeList.get(0));
         return new ResponseEntity<>(groupReport, HttpStatus.OK);
-    }
+    }*/
 
 }
