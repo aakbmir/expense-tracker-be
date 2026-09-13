@@ -1,8 +1,7 @@
 package com.aakbmir.expensetracker.usecases.bank.service;
 
-import com.aakbmir.expensetracker.usecases.bank.repository.entity.Bank;
 import com.aakbmir.expensetracker.usecases.bank.repository.BankRepository;
-import com.aakbmir.expensetracker.utils.CommonUtils;
+import com.aakbmir.expensetracker.usecases.bank.repository.entity.Bank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +13,6 @@ public class BankService {
 
     @Autowired
     BankRepository bankRepository;
-
-    @Autowired
-    CommonUtils commonUtils;
 
     public Bank saveBankRecord(Bank bankRecord) {
         return bankRepository.save(bankRecord);

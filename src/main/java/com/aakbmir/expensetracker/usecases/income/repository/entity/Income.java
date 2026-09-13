@@ -1,13 +1,12 @@
 package com.aakbmir.expensetracker.usecases.income.repository.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.Instant;
 
 @Entity
 @Data
@@ -17,15 +16,15 @@ import java.time.Instant;
 @Table(name = "income_master")
 public class Income {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String category;
+  private String category;
 
-    private BigDecimal price;
+  private BigDecimal price;
 
-    private Instant date;
+  private Instant date;
 
-    private String note;
+  private String note;
 }

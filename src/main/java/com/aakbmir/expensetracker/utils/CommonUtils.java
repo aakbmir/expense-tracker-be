@@ -8,9 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -28,24 +25,12 @@ public class CommonUtils {
                 "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
     }
 
-    public List<String> fetchDistinctSubCategories() {
-        return categoryRepository.fetchDistinctSuperCategories();
-    }
-
-    public List<Category> fetchAllCategories(@NotNull boolean showAll, @NotBlank int year, @NotBlank int month) {
+    public List<Category> fetchAllCategories(
+            @NotNull boolean showAll, @NotBlank int year, @NotBlank int month) {
         if (showAll) {
             return categoryRepository.findAllByOrderByCategoryAsc(year, month);
         } else {
             return categoryRepository.findActiveByOrderByCategoryAsc(CategoryStatus.ACTIVE, year, month);
         }
-    }
-
-    public List<Category> fetchAllCategories() {
-        return categoryRepository.findAllByOrderByCategoryAsc();
-    }
-
-    public static String getMonthYear(Instant date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
-        return sdf.format(Date.from(date)); // convert here
     }
 }

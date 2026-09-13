@@ -5,7 +5,5 @@ import lombok.Data;
 @Data
 public class CategoryActionRequest {
 
-    String action;
-
+  String action;
 }
-

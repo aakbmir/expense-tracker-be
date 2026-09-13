@@ -1,5 +1,3 @@
 package com.aakbmir.expensetracker;
 
-class ExpenseTrackerApplicationTests {
-
-}
+class ExpenseTrackerApplicationTests {}

@@ -1,11 +1,11 @@
 package com.aakbmir.expensetracker.usecases.category.bff.dto;
 
+import java.math.BigDecimal;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,14 +13,13 @@ import java.util.List;
 @Builder
 public class SuperCategoryDTO {
 
-    private String name;
+  private String name;
 
-    private List<CategoryDTO> categoryDtoList;
+  private List<CategoryDTO> categoryDtoList;
 
-    private double budget;
+  private BigDecimal budget;
 
-    private double expense;
+  private BigDecimal expense;
 
-    @Builder.Default
-    private boolean expanded = false;
+  @Builder.Default private boolean expanded = false;
 }

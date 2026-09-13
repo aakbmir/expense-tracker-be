@@ -3,6 +3,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.13'
     id 'io.spring.dependency-management' version '1.1.7'
+    id "com.diffplug.spotless" version "8.10.2"
 }
 
 group = 'com.aakbmir.expense-tracker'
@@ -14,6 +15,14 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
+}
+
+spotless {
+    java {
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat('1.22.0')
+    }
 }
 
 configurations {

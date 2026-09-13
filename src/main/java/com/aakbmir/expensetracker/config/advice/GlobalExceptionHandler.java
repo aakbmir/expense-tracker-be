@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    @SuppressWarnings("unused")
-    public ResponseEntity<String> handleException(Exception ex) {
-        log.error("error" , ex);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ex.getMessage());
-    }
+  @ExceptionHandler(Exception.class)
+  @SuppressWarnings("unused")
+  public ResponseEntity<String> handleException(Exception ex) {
+    log.error("error", ex);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+  }
 }

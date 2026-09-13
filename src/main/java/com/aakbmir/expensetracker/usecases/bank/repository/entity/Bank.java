@@ -16,13 +16,13 @@ import java.time.Instant;
 @Table(name = "bank_bal_master")
 public class Bank {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String name;
+  private String name;
 
-    private Instant date;
+  private Instant date;
 
-    private BigDecimal price;
+  private BigDecimal price;
 }

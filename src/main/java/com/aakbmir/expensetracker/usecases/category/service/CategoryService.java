@@ -1,5 +1,8 @@
 package com.aakbmir.expensetracker.usecases.category.service;
 
+import static com.aakbmir.expensetracker.usecases.category.service.mapper.CategoryMapper.mapToCategory;
+import static com.aakbmir.expensetracker.usecases.category.service.mapper.CategoryMapper.mapToCategoryApiDTO;
+
 import com.aakbmir.expensetracker.usecases.budget.service.BudgetService;
 import com.aakbmir.expensetracker.usecases.category.bff.dto.CategoryApiDTO;
 import com.aakbmir.expensetracker.usecases.category.bff.dto.builder.CategoryResponse;
@@ -13,213 +16,218 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.aakbmir.expensetracker.usecases.category.service.mapper.CategoryMapper.mapToCategory;
-import static com.aakbmir.expensetracker.usecases.category.service.mapper.CategoryMapper.mapToCategoryApiDTO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final CategoryRepository categoryRepository;
+  private final CategoryRepository categoryRepository;
 
-    private final BudgetService budgetService;
+  private final BudgetService budgetService;
 
-    private final CommonUtils commonUtils;
+  private final CommonUtils commonUtils;
 
-    @Transactional
-    public CategoryApiDTO saveCategoryAndBudget(@NotNull @Valid CategoryApiDTO categoryApiDTO) {
-        categoryApiDTO = saveCategory(categoryApiDTO);
-        //budgetService.saveBudgetWithCategory(categoryApiDTO);
-        return categoryApiDTO;
-    }
+  @Transactional
+  public CategoryApiDTO saveCategoryAndBudget(@NotNull @Valid CategoryApiDTO categoryApiDTO) {
+    categoryApiDTO = saveCategory(categoryApiDTO);
+    // budgetService.saveBudgetWithCategory(categoryApiDTO);
+    return categoryApiDTO;
+  }
 
-    public @NotNull @Valid CategoryApiDTO updateCategory(@NotNull @Valid CategoryApiDTO categoryApiDTO) throws Exception {
-        return saveCategory(categoryApiDTO);
-    }
+  public @NotNull @Valid CategoryApiDTO updateCategory(
+      @NotNull @Valid CategoryApiDTO categoryApiDTO) throws Exception {
+    return saveCategory(categoryApiDTO);
+  }
 
-    public CategoryApiDTO saveCategory(@NotNull @Valid CategoryApiDTO categoryApiDTO) {
-        Category category = mapToCategory(categoryApiDTO);
-        category = categoryRepository.save(category);
-        return mapToCategoryApiDTO(category);
-    }
+  public CategoryApiDTO saveCategory(@NotNull @Valid CategoryApiDTO categoryApiDTO) {
+    Category category = mapToCategory(categoryApiDTO);
+    category = categoryRepository.save(category);
+    return mapToCategoryApiDTO(category);
+  }
 
-    public List<CategoryApiDTO> addAllCategories(@NotBlank int year, @NotBlank int month) {
-        List<Category> categoryList = commonUtils.fetchAllCategories(true, year, month);
-        List<Category> newCategoryList = categoryList.stream()
-                .map(cat -> cat.toBuilder()
+  public List<CategoryApiDTO> addAllCategories(@NotBlank int year, @NotBlank int month) {
+    List<Category> categoryList = commonUtils.fetchAllCategories(true, year, month);
+    List<Category> newCategoryList =
+        categoryList.stream()
+            .map(
+                cat ->
+                    cat.toBuilder()
                         .categoryId(null)
                         .date(Instant.now().plus(15, ChronoUnit.DAYS))
                         .build())
-                .toList();
-        newCategoryList = categoryRepository.saveAll(newCategoryList);
-        return newCategoryList.stream()
-                .map(CategoryMapper::mapToCategoryApiDTO)
-                .toList();
+            .toList();
+    newCategoryList = categoryRepository.saveAll(newCategoryList);
+    return newCategoryList.stream().map(CategoryMapper::mapToCategoryApiDTO).toList();
+  }
+
+  public void deleteCategory(@NotNull Long id, @NotNull String action) {
+    if (action.equalsIgnoreCase("Active")) {
+      categoryRepository.updateCategoryStatus(id, CategoryStatus.ACTIVE);
+    } else if (action.equalsIgnoreCase("Inactive")) {
+      categoryRepository.updateCategoryStatus(id, CategoryStatus.INACTIVE);
+    } else if (action.equalsIgnoreCase("Delete")) {
+      categoryRepository.deleteById(id);
     }
+  }
 
-    public void deleteCategory(@NotNull Long id, @NotNull String action) {
-        if (action.equalsIgnoreCase("Active")) {
-            categoryRepository.updateCategoryStatus(id, CategoryStatus.ACTIVE);
-        } else if (action.equalsIgnoreCase("Inactive")) {
-            categoryRepository.updateCategoryStatus(id, CategoryStatus.INACTIVE);
-        } else if (action.equalsIgnoreCase("Delete")) {
-            categoryRepository.deleteById(id);
-        }
+  public CategoryResponse getAllCategoriesByMonthAndYear(
+      @NotNull boolean showInactive,
+      @NotBlank int year,
+      @NotBlank int month,
+      @NotBlank String feature) {
+    List<Category> categories = new ArrayList<>();
+    if (feature.equalsIgnoreCase("Category")) {
+      categories = commonUtils.fetchAllCategories(showInactive, year, month);
+      categories = excludeInvestments(categories);
+    } else if (feature.equalsIgnoreCase("Expense")) {
+      categories = commonUtils.fetchAllCategories(showInactive, year, month);
+      categories = excludeOtherThanInvestments(categories);
+    } else {
+      categories = commonUtils.fetchAllCategories(showInactive, year, month);
     }
-
-    public CategoryResponse getAllCategoriesByMonthAndYear(@NotNull boolean showInactive,
-                                                           @NotBlank int year, @NotBlank int month,
-                                                           @NotBlank String feature) {
-        List<Category> categories = new ArrayList<>();
-        if (feature.equalsIgnoreCase("Category")) {
-            categories = commonUtils.fetchAllCategories(showInactive, year, month);
-            categories = excludeInvestments(categories);
-        } else if (feature.equalsIgnoreCase("Expense")) {
-            categories = commonUtils.fetchAllCategories(showInactive, year, month);
-            categories = excludeOtherThanInvestments(categories);
-        } else {
-            categories = commonUtils.fetchAllCategories(showInactive, year, month);
-        }
-        if (categories.isEmpty()) {
-            return CategoryResponse.builder().build();
-        }
-        return transformCategories(categories);
+    if (categories.isEmpty()) {
+      return CategoryResponse.builder().build();
     }
+    return transformCategories(categories);
+  }
 
-    private List<Category> excludeInvestments(List<Category> categories) {
-        List<Category> categoryList = new ArrayList<>();
-        for (Category cat : categories) {
-            if (!cat.getMainCategory().equalsIgnoreCase("Investments")) {
-                categoryList.add(cat);
-            }
-        }
-        return categoryList;
+  private List<Category> excludeInvestments(List<Category> categories) {
+    List<Category> categoryList = new ArrayList<>();
+    for (Category cat : categories) {
+      if (!cat.getMainCategory().equalsIgnoreCase("Investments")) {
+        categoryList.add(cat);
+      }
     }
+    return categoryList;
+  }
 
-    private List<Category> excludeOtherThanInvestments(List<Category> categories) {
-        List<Category> categoryList = new ArrayList<>();
-        for (Category cat : categories) {
-            if (cat.getMainCategory().equalsIgnoreCase("Investments")) {
-                categoryList.add(cat);
-            }
-        }
-        return categoryList;
+  private List<Category> excludeOtherThanInvestments(List<Category> categories) {
+    List<Category> categoryList = new ArrayList<>();
+    for (Category cat : categories) {
+      if (cat.getMainCategory().equalsIgnoreCase("Investments")) {
+        categoryList.add(cat);
+      }
     }
+    return categoryList;
+  }
 
-    private CategoryResponse transformCategories(List<Category> categories) {
+  private CategoryResponse transformCategories(List<Category> categories) {
 
-        Instant date = categories.get(0).getDate();
-        return buildCategoryList(date, categories);
-    }
+    Instant date = categories.get(0).getDate();
+    return buildCategoryList(date, categories);
+  }
 
-    public CategoryResponse buildCategoryList(Instant date, List<Category> categories) {
+  public CategoryResponse buildCategoryList(Instant date, List<Category> categories) {
 
-        Map<FinancialType, Map<String, Map<String, List<Category>>>>
-                grouped = categories.stream()
-                .collect(Collectors.groupingBy(
-                        Category::getFinancialType,
+    Map<FinancialType, Map<String, Map<String, List<Category>>>> grouped =
+        categories.stream()
+            .collect(
+                Collectors.groupingBy(
+                    Category::getFinancialType,
+                    LinkedHashMap::new,
+                    Collectors.groupingBy(
+                        Category::getMainCategory,
                         LinkedHashMap::new,
                         Collectors.groupingBy(
-                                Category::getMainCategory,
-                                LinkedHashMap::new,
-                                Collectors.groupingBy(
-                                        Category::getSuperCategory,
-                                        LinkedHashMap::new,
-                                        Collectors.toList()
-                                )
-                        )
-                ));
+                            Category::getSuperCategory, LinkedHashMap::new, Collectors.toList()))));
 
-        List<CategoryResponse.FinancialTypeResponse> financialTypes =
-                grouped.entrySet()
-                        .stream()
-                        .map(financialTypeEntry -> {
+    List<CategoryResponse.FinancialTypeResponse> financialTypes =
+        grouped.entrySet().stream()
+            .map(
+                financialTypeEntry -> {
+                  List<CategoryResponse.FinancialTypeResponse.MainCategoryResponse> mainCategories =
+                      financialTypeEntry.getValue().entrySet().stream()
+                          .map(
+                              mainCategoryEntry -> {
+                                List<
+                                        CategoryResponse.FinancialTypeResponse.MainCategoryResponse
+                                            .SuperCategoryResponse>
+                                    superCategories =
+                                        mainCategoryEntry.getValue().entrySet().stream()
+                                            .map(
+                                                superCategoryEntry -> {
+                                                  List<Category> categoryList =
+                                                      superCategoryEntry.getValue();
 
-                            List<CategoryResponse.FinancialTypeResponse.MainCategoryResponse> mainCategories =
-                                    financialTypeEntry.getValue()
-                                            .entrySet()
-                                            .stream()
-                                            .map(mainCategoryEntry -> {
+                                                  List<
+                                                          CategoryResponse.FinancialTypeResponse
+                                                              .MainCategoryResponse
+                                                              .SuperCategoryResponse
+                                                              .CategoryItemResponse>
+                                                      categoryItems =
+                                                          categoryList.stream()
+                                                              .map(
+                                                                  category ->
+                                                                      CategoryResponse
+                                                                          .FinancialTypeResponse
+                                                                          .MainCategoryResponse
+                                                                          .SuperCategoryResponse
+                                                                          .CategoryItemResponse
+                                                                          .builder()
+                                                                          .categoryGroup(
+                                                                              category
+                                                                                  .getCategoryGroup())
+                                                                          .categoryId(
+                                                                              category
+                                                                                  .getCategoryId())
+                                                                          .categoryName(
+                                                                              category
+                                                                                  .getCategory())
+                                                                          .status(
+                                                                              category.getStatus())
+                                                                          .budgetAmount(
+                                                                              category
+                                                                                  .getBudgetAmount())
+                                                                          .build())
+                                                              .toList();
 
-                                                List<CategoryResponse.FinancialTypeResponse.MainCategoryResponse.SuperCategoryResponse>
-                                                        superCategories =
-                                                        mainCategoryEntry.getValue()
-                                                                .entrySet()
-                                                                .stream()
-                                                                .map(superCategoryEntry -> {
+                                                  BigDecimal totalBudgetAmount =
+                                                      categoryList.stream()
+                                                          .map(Category::getBudgetAmount)
+                                                          .filter(Objects::nonNull)
+                                                          .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                                                                    List<Category> categoryList =
-                                                                            superCategoryEntry.getValue();
-
-                                                                    List<CategoryResponse.FinancialTypeResponse.MainCategoryResponse.SuperCategoryResponse.CategoryItemResponse>
-                                                                            categoryItems =
-                                                                            categoryList.stream()
-                                                                                    .map(category ->
-                                                                                            CategoryResponse.FinancialTypeResponse.MainCategoryResponse.SuperCategoryResponse.CategoryItemResponse.builder()
-                                                                                                    .categoryGroup(category.getCategoryGroup())
-                                                                                                    .categoryId(category.getCategoryId())
-                                                                                                    .categoryName(category.getCategory())
-                                                                                                    .status(category.getStatus())
-                                                                                                    .budgetAmount(category.getBudgetAmount())
-                                                                                                    .build()
-                                                                                    )
-                                                                                    .toList();
-
-                                                                    BigDecimal totalBudgetAmount =
-                                                                            categoryList.stream()
-                                                                                    .map(Category::getBudgetAmount)
-                                                                                    .filter(Objects::nonNull)
-                                                                                    .reduce(
-                                                                                            BigDecimal.ZERO,
-                                                                                            BigDecimal::add
-                                                                                    );
-
-                                                                    return CategoryResponse.FinancialTypeResponse.MainCategoryResponse.SuperCategoryResponse.builder()
-                                                                            .superCategory(superCategoryEntry.getKey())
-                                                                            .categories(categoryItems)
-                                                                            .totalBudgetAmount(totalBudgetAmount)
-                                                                            .build();
-
-                                                                })
-                                                                .toList();
-
-                                                return CategoryResponse.FinancialTypeResponse.MainCategoryResponse.builder()
-                                                        .mainCategory(mainCategoryEntry.getKey())
-                                                        .superCategories(superCategories)
-                                                        .build();
-
-                                            })
+                                                  return CategoryResponse.FinancialTypeResponse
+                                                      .MainCategoryResponse.SuperCategoryResponse
+                                                      .builder()
+                                                      .superCategory(superCategoryEntry.getKey())
+                                                      .categories(categoryItems)
+                                                      .totalBudgetAmount(totalBudgetAmount)
+                                                      .build();
+                                                })
                                             .toList();
 
-                            return CategoryResponse.FinancialTypeResponse.builder()
-                                    .financialType(financialTypeEntry.getKey())
-                                    .mainCategories(mainCategories)
+                                return CategoryResponse.FinancialTypeResponse.MainCategoryResponse
+                                    .builder()
+                                    .mainCategory(mainCategoryEntry.getKey())
+                                    .superCategories(superCategories)
                                     .build();
+                              })
+                          .toList();
 
-                        })
-                        .toList();
+                  return CategoryResponse.FinancialTypeResponse.builder()
+                      .financialType(financialTypeEntry.getKey())
+                      .mainCategories(mainCategories)
+                      .build();
+                })
+            .toList();
 
-        return CategoryResponse.builder()
-                .date(date)
-                .financialTypes(financialTypes)
-                .build();
-    }
+    return CategoryResponse.builder().date(date).financialTypes(financialTypes).build();
+  }
 
-    public BigDecimal getCategoryBudgetAmount(int year, int month) {
-        List<Category> categories = commonUtils.fetchAllCategories(true, year, month);
+  public BigDecimal getCategoryBudgetAmount(int year, int month) {
+    List<Category> categories = commonUtils.fetchAllCategories(true, year, month);
 
-        return categories.stream()
-                .filter(cat -> "Investments".equals(cat.getMainCategory()))
-                .map(Category::getBudgetAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    return categories.stream()
+        .filter(cat -> "Investments".equals(cat.getMainCategory()))
+        .map(Category::getBudgetAmount)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
 }

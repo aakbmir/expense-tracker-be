@@ -1,15 +1,12 @@
 package com.aakbmir.expensetracker.usecases.reports.api.dto;
 
-import lombok.Builder;
-import lombok.Data;
-
 import java.math.BigDecimal;
+import lombok.Builder;
 
 @Builder
 public record OverviewRecord(
-        BigDecimal totalExpenseBudget,
-        BigDecimal totalExpenseSpent,
-        BigDecimal totalSavingsBudget,
-        BigDecimal totalSavingsDone,
-        BigDecimal totalIncome) {
-}
+    BigDecimal totalIncome,
+    BigDecimal totalActualExpenses,
+    BigDecimal totalPlannedExpenses,
+    BigDecimal totalPlannedSavings,
+    BigDecimal totalActualSavings) {}
