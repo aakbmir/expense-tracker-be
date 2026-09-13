@@ -1,10 +1,9 @@
 package com.aakbmir.expensetracker.usecases.bank.repository.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.Instant;
+import lombok.*;
 
 @Entity
 @Data

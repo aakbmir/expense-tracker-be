@@ -2,14 +2,13 @@ package com.aakbmir.expensetracker.usecases.bank.api;
 
 import com.aakbmir.expensetracker.usecases.bank.repository.entity.Bank;
 import com.aakbmir.expensetracker.usecases.bank.service.BankService;
+import java.util.List;
+import java.util.Optional;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/bank")
