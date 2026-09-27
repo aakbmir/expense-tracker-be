@@ -18,6 +18,7 @@ import com.aakbmir.expensetracker.usecases.reports.api.dto.MainCategoryReportRes
 import com.aakbmir.expensetracker.usecases.reports.api.dto.OverviewRecord;
 import com.aakbmir.expensetracker.usecases.reports.api.dto.SuperCategoryReportResponse;
 import com.aakbmir.expensetracker.usecases.reports.repository.CategoryExpenseProjection;
+import com.aakbmir.expensetracker.usecases.reports.repository.ReportsRepository;
 import com.aakbmir.expensetracker.usecases.savings.repository.SavingsRepository;
 import com.aakbmir.expensetracker.usecases.savings.repository.entity.Savings;
 import com.aakbmir.expensetracker.utils.enums.FinancialType;
@@ -41,6 +42,8 @@ public class ReportsService {
   private final IncomeRepository incomeRepository;
 
   private final SavingsRepository savingsRepository;
+
+  private final ReportsRepository reportsRepository;
 
   public List<CategoryApiDTO> getDistinctCategories() {
     List<Category> categoryList =
@@ -275,5 +278,10 @@ public class ReportsService {
       json.put("expense", 0);
     }
     return json;
+  }
+
+  public List<ExpenseDTO> fetchCategoryReportDetails(String category, Integer year, Integer month) {
+    List<Expense> expenseList = reportsRepository.findCategoryByMonthAndYear(year, month, category);
+    return expenseList.stream().map(ExpenseMapper::mapToExpenseDTO).toList();
   }
 }
